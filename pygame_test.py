@@ -5,7 +5,7 @@ import random
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-
+blue = (0, 0, 255)
 
 class Drone():
     def __init__(self, x, y, speed, direction, size, id, env):
@@ -18,6 +18,7 @@ class Drone():
         self.target = None
         self.id = id
         self.destination = None
+        self.guide = None
 
     def display(self):
         a = self.dir
@@ -25,21 +26,39 @@ class Drone():
         y = self.y
         s = self.size
 
-        pygame.draw.line(screen, white,
-                         (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) - a),
-                          y - (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) - a)),
-                         (x + s * math.cos(-a), y + s * math.sin(-a)))
+        if self.guide == None:
+            pygame.draw.line(screen, white,
+                            (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) - a),
+                            y - (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) - a)),
+                            (x + s * math.cos(-a), y + s * math.sin(-a)))
 
-        pygame.draw.line(screen, white,
-                         (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) + a),
-                          y + (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) + a)),
-                         (x + s * math.cos(a), y + s * math.sin(-a)))
+            pygame.draw.line(screen, white,
+                            (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) + a),
+                            y + (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) + a)),
+                            (x + s * math.cos(a), y + s * math.sin(-a)))
 
-        pygame.draw.line(screen, white,
-                         (x - (s * math.sqrt(2) / 2) * math.cos(-a + math.pi / 4),
-                          y - (s * math.sqrt(2) / 2) * math.sin(-a + math.pi / 4)),
-                         (x - (s * math.sqrt(2) / 2) * math.cos(a + math.pi / 4),
-                          y + (s * math.sqrt(2) / 2) * math.sin(a + math.pi / 4)))
+            pygame.draw.line(screen, white,
+                            (x - (s * math.sqrt(2) / 2) * math.cos(-a + math.pi / 4),
+                            y - (s * math.sqrt(2) / 2) * math.sin(-a + math.pi / 4)),
+                            (x - (s * math.sqrt(2) / 2) * math.cos(a + math.pi / 4),
+                            y + (s * math.sqrt(2) / 2) * math.sin(a + math.pi / 4)))
+
+        elif self.guide != None:
+            pygame.draw.line(screen, blue,
+                            (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) - a),
+                            y - (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) - a)),
+                            (x + s * math.cos(-a), y + s * math.sin(-a)))
+
+            pygame.draw.line(screen, blue,
+                            (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) + a),
+                            y + (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) + a)),
+                            (x + s * math.cos(a), y + s * math.sin(-a)))
+
+            pygame.draw.line(screen, blue,
+                            (x - (s * math.sqrt(2) / 2) * math.cos(-a + math.pi / 4),
+                            y - (s * math.sqrt(2) / 2) * math.sin(-a + math.pi / 4)),
+                            (x - (s * math.sqrt(2) / 2) * math.cos(a + math.pi / 4),
+                            y + (s * math.sqrt(2) / 2) * math.sin(a + math.pi / 4)))
 
     def wander(self, r=100):
         if self.destination == None:
@@ -52,6 +71,11 @@ class Drone():
             else:
                 dest_x, dest_y = self.target.x, self.target.y
                 self.destination = dest_x, dest_y
+        
+        elif self.guide != None:
+            t_agent = self.guide.target
+            self.destination = t_agent.x, t_agent.y
+            
 
         elif point_distance(self.x, self.y, self.destination[0], self.destination[1]) < 1 and self.target == None:
             self.destination = None
@@ -62,7 +86,9 @@ class Drone():
 
         elif self.destination != None and self.target != None:
             if self.destination != self.target:
-                self .destination = self.target.x, self.target.y
+                self.destination = self.target.x, self.target.y
+            for agent in self.neighbours(1000):
+                agent.guide = self
 
     def move(self):
         try:
@@ -85,7 +111,10 @@ class Drone():
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r]
 
     def target_agent(self):
-        if self.target == None:
+        if self.guide != None:
+            return self.guide.target
+
+        elif self.target == None:
             min_distance = math.inf
             best_agent = None
             for agent in self.neighbours():
@@ -176,7 +205,7 @@ def point_distance(x1, y1, x2, y2):
 
 
 if __name__ == '__main__':
-    env = Environment(400, 400, 800, 800)
+    env = Environment(5, 1, 800, 800)
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
