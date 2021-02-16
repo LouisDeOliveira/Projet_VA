@@ -152,10 +152,10 @@ class Environment():
         self.Agent_list = []
         for _ in range(n_drones):
             self.Agent_list.append(Drone(random.random(
-            )*self.width, random.random()*self.height, 1, -90, 10, int(uuid.uuid1()), self))
+            )*self.width, random.random()*self.height, 1, -90, 5, int(uuid.uuid1()), self))
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
-            )*self.width, random.random()*self.height, 5, -90, 10, int(uuid.uuid1()), self))
+            )*self.width, random.random()*self.height, 5, -90, 5, int(uuid.uuid1()), self))
 
     def step(self):
         for agent in self.Agent_list:
@@ -176,7 +176,7 @@ def point_distance(x1, y1, x2, y2):
 
 
 if __name__ == '__main__':
-    env = Environment(4, 4, 800, 800)
+    env = Environment(400, 400, 800, 800)
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
