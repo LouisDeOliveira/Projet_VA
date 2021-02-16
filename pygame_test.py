@@ -66,23 +66,24 @@ class Drone():
 
     def move(self):
         try:
+
             d = point_distance(
                 self.x, self.y, self.destination[0], self.destination[1])
 
             cosr = (self.destination[0] - self.x)/d
             sinr = (self.destination[1] - self.y)/d
-            new_x = max(min(self.x + cosr * self.speed,
+            new_x = max(min(self.x + cosr * self.speed*dt,
                             self.env.width), 0)
-            new_y = max(min(self.y + sinr * self.speed,
+            new_y = max(min(self.y + sinr * self.speed*dt,
                             self.env.height), 0)
             new_dir = math.atan2(-sinr, cosr)
             return new_x, new_y, new_dir
+
         except:
-            self.wander()
-            self.move()
+            pass
 
     def neighbours(self, r=100):
-        return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r]
+        return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def target_agent(self):
         if self.target == None:
@@ -152,7 +153,7 @@ class Environment():
         self.Agent_list = []
         for _ in range(n_drones):
             self.Agent_list.append(Drone(random.random(
-            )*self.width, random.random()*self.height, 1, -90, 5, int(uuid.uuid1()), self))
+            )*self.width, random.random()*self.height, 100, -90, 5, int(uuid.uuid1()), self))
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
             )*self.width, random.random()*self.height, 5, -90, 5, int(uuid.uuid1()), self))
