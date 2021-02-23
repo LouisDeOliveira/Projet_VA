@@ -28,7 +28,7 @@ class Drone():
         self.env = env
         self.x = x
         self.y = y
-        self.state = None
+        self.state = 'normal'
         self.battery = None
         self.dir = direction
         self.size = size
@@ -62,9 +62,15 @@ class Drone():
     def send_message(self):
         pass
 
+    def score(self):
+        pass
+
+
     
 
     def display(self):
+        """ Dessine le drone sur l'écran """
+        
         a = self.dir
         x = self.x
         y = self.y
@@ -110,7 +116,7 @@ class Drone():
                 self .destination = self.target.x, self.target.y
 
     def move(self):
-        
+
         try:
 
             d = point_distance(
