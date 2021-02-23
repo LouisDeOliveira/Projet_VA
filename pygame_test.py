@@ -13,11 +13,41 @@ class Drone():
         self.env = env
         self.x = x
         self.y = y
+        self.state = None
+        self.battery = None
         self.dir = direction
         self.size = size
         self.target = None
         self.id = id
         self.destination = None
+        self.inbox = []
+        self.message = {'sender_id':None, 'recipient_id':None, 'time':None, 'message':{'status':{'x':None, 'y':None, 'z':None, 'dir':None, 'speed':None, 'state':None, 'battery':None}, 'alert':{'verif':None, 'help':None, 't_x':None, 't_y':None, 't_z':None}}}
+
+
+    def make_message(self, recipient):
+        self.message['sender_id']=self.id
+        self.message['recipient_id']=recipient.id
+        self.message['time'] = t
+        self.message['message']['status']['x']=self.x
+        self.message['message']['status']['y']=self.y
+        self.message['message']['status']['z']=self.z
+        self.message['message']['status']['dir']=self.dir
+        self.message['message']['status']['speed']=self.speed
+        self.message['message']['status']['state']=self.state
+        self.message['message']['status']['battery']=self.battery
+
+        if self.target != None:
+            self.message['message']['alert']['t_x']=self.target.x
+            self.message['message']['alert']['t_y']=self.target.y
+            self.message['message']['alert']['t_z']=self.target.z
+
+    def read_message(self):
+        pass
+    
+    def send_message(self):
+        pass
+
+    
 
     def display(self):
         a = self.dir
