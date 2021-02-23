@@ -80,9 +80,9 @@ class Drone():
             return new_x, new_y, new_dir
 
         except:
-            pass
+            return self.x, self.y, self.dir
 
-    def neighbours(self, r=100):
+    def neighbours(self, r=200):
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def target_agent(self):
@@ -162,6 +162,18 @@ class Environment():
         for agent in self.Agent_list:
             agent.step()
 
+    def draw_graph(self):
+        edge_list=[]
+        for agent in self.Agent_list:
+            if type(agent) == Drone:
+                for neighbour in agent.neighbours():
+                    if type(neighbour)==Drone:
+                        if [(neighbour.x,neighbour.y),(agent.x,agent.y)] not in edge_list and [(agent.x,agent.y),(neighbour.x,neighbour.y)] not in edge_list:
+                            edge_list.append([(neighbour.x,neighbour.y),(agent.x,agent.y)])
+
+        for edge in edge_list:
+            pygame.draw.line(screen,white,(edge[0][0],edge[0][1]),(edge[1][0],edge[1][1]))
+
 
 def distance(Agent1, Agent2):
     x1, y1 = Agent1.x, Agent1.y
@@ -177,7 +189,7 @@ def point_distance(x1, y1, x2, y2):
 
 
 if __name__ == '__main__':
-    env = Environment(400, 400, 800, 800)
+    env = Environment(10, 0, 500, 500)
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
@@ -197,7 +209,7 @@ if __name__ == '__main__':
         env.step()
         for agent in env.Agent_list:
             agent.display()
-
+        env.draw_graph()
         pygame.display.update()
         screen.fill((0, 0, 0))
         # Setting FPS
