@@ -8,6 +8,21 @@ red = (255, 0, 0)
 
 
 class Drone():
+    """
+    speed : int/float : vitess du drone
+    env : Environment
+    state : normal (pas de cible, en recherche), finder (à trouvé une cible), helper (aide un finder) 
+    battery : niveau de batterie : 0 -> dcd
+    dir : float : direction du drone
+    size : Taille d'affichage du drone
+    target : Target :  cible du drone
+    id : int : identifiant unique du Drone
+    destination : tuple : destination du drone
+    inbox : list : liste des messages reçus par le drone
+    message :  dict : message a envoyer
+
+    """
+
     def __init__(self, x, y, speed, direction, size, id, env):
         self.speed = speed
         self.env = env
@@ -95,6 +110,7 @@ class Drone():
                 self .destination = self.target.x, self.target.y
 
     def move(self):
+        
         try:
 
             d = point_distance(
@@ -113,9 +129,14 @@ class Drone():
             return self.x, self.y, self.dir
 
     def neighbours(self, r=200):
+        """ liste des agents (Drone ou Target) à distance <= r du Drone """ 
+
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def target_agent(self):
+        """ Attribue en tant que cible la cible la plus proche du champ de vision du drone si celui-ci n'en a pas déjà une """
+
+
         if self.target == None:
             min_distance = math.inf
             best_agent = None
@@ -137,6 +158,10 @@ class Drone():
 
 
 class Target():
+    """ Voir drone
+        targeted : Boolean : True si ciblé par un Drone """
+
+
     def __init__(self, x, y, speed, direction, size, id, env):
         self.id = id
         self.speed = speed
@@ -177,6 +202,11 @@ class Target():
 
 
 class Environment():
+    """ 
+    width : int : largeur de l'écran
+    height : int : hauteur de l'écran
+    Agent_list : list : liste de tous les agents (Drone et Target) de l'environment"""
+
     def __init__(self, n_drones, n_targets, width, height):
         self.width = width
         self.height = height
@@ -193,6 +223,7 @@ class Environment():
             agent.step()
 
     def draw_graph(self):
+        """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins)"""
         edge_list=[]
         for agent in self.Agent_list:
             if type(agent) == Drone:
@@ -206,6 +237,7 @@ class Environment():
 
 
 def distance(Agent1, Agent2):
+    """ distance entre deux agents """
     x1, y1 = Agent1.x, Agent1.y
     x2, y2 = Agent2.x, Agent2.y
 
@@ -214,12 +246,13 @@ def distance(Agent1, Agent2):
 
 
 def point_distance(x1, y1, x2, y2):
+    """ distance entre deux points """
     d = math.sqrt((x1-x2)**2+(y1-y2)**2)
     return d
 
 
 if __name__ == '__main__':
-    env = Environment(10, 0, 500, 500)
+    env = Environment(10, 0, 750, 750)
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
