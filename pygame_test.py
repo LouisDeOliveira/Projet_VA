@@ -2,9 +2,12 @@ import pygame
 import math
 import uuid
 import random
+import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
+f = 0.1
+maxacc = 300.0
 
 
 class Drone():
@@ -26,8 +29,12 @@ class Drone():
     def __init__(self, x, y, speed, direction, size, id, env):
         self.speed = speed
         self.env = env
-        self.x = x
-        self.y = y
+        self.pos = np.array([x, y])
+        self.speed = np.array([0, 0])
+        self.acc = np.array([0, 0])
+        self.k = 1
+        self.l0 = 150
+        self.maxspeed = speed
         self.state = 'normal'
         self.battery = None
         self.dir = direction
@@ -36,44 +43,41 @@ class Drone():
         self.id = id
         self.destination = None
         self.inbox = []
-        self.message = {'sender_id':None, 'recipient_id':None, 'time':None, 'message':{'status':{'x':None, 'y':None, 'z':None, 'dir':None, 'speed':None, 'state':None, 'battery':None}, 'alert':{'verif':None, 'help':None, 't_x':None, 't_y':None, 't_z':None}}}
-
+        self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
+                                                                                                      'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
 
     def make_message(self, recipient):
-        self.message['sender_id']=self.id
-        self.message['recipient_id']=recipient.id
+        self.message['sender_id'] = self.id
+        self.message['recipient_id'] = recipient.id
         self.message['time'] = t
-        self.message['message']['status']['x']=self.x
-        self.message['message']['status']['y']=self.y
-        self.message['message']['status']['z']=self.z
-        self.message['message']['status']['dir']=self.dir
-        self.message['message']['status']['speed']=self.speed
-        self.message['message']['status']['state']=self.state
-        self.message['message']['status']['battery']=self.battery
+        self.message['message']['status']['x'] = self.x
+        self.message['message']['status']['y'] = self.y
+        self.message['message']['status']['z'] = self.z
+        self.message['message']['status']['dir'] = self.dir
+        self.message['message']['status']['speed'] = self.speed
+        self.message['message']['status']['state'] = self.state
+        self.message['message']['status']['battery'] = self.battery
 
         if self.target != None:
-            self.message['message']['alert']['t_x']=self.target.x
-            self.message['message']['alert']['t_y']=self.target.y
-            self.message['message']['alert']['t_z']=self.target.z
+            self.message['message']['alert']['t_x'] = self.target.x
+            self.message['message']['alert']['t_y'] = self.target.y
+            self.message['message']['alert']['t_z'] = self.target.z
 
     def read_message(self):
         pass
-    
+
     def send_message(self):
         pass
 
     def score(self):
         pass
 
-
-    
-
     def display(self):
         """ Dessine le drone sur l'écran """
-        
+
         a = self.dir
-        x = self.x
-        y = self.y
+        x = self.pos[0]
+        y = self.pos[1]
         s = self.size
 
         pygame.draw.line(screen, white,
@@ -135,13 +139,12 @@ class Drone():
             return self.x, self.y, self.dir
 
     def neighbours(self, r=200):
-        """ liste des agents (Drone ou Target) à distance <= r du Drone """ 
+        """ liste des agents (Drone ou Target) à distance <= r du Drone """
 
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def target_agent(self):
         """ Attribue en tant que cible la cible la plus proche du champ de vision du drone si celui-ci n'en a pas déjà une """
-
 
         if self.target == None:
             min_distance = math.inf
@@ -166,7 +169,6 @@ class Drone():
 class Target():
     """ Voir drone
         targeted : Boolean : True si ciblé par un Drone """
-
 
     def __init__(self, x, y, speed, direction, size, id, env):
         self.id = id
@@ -219,7 +221,7 @@ class Environment():
         self.Agent_list = []
         for _ in range(n_drones):
             self.Agent_list.append(Drone(random.random(
-            )*self.width, random.random()*self.height, 100, -90, 5, int(uuid.uuid1()), self))
+            )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
             )*self.width, random.random()*self.height, 5, -90, 5, int(uuid.uuid1()), self))
@@ -228,24 +230,58 @@ class Environment():
         for agent in self.Agent_list:
             agent.step()
 
+    def update(self):
+        for agentA in self.Agent_list:
+            ax = 0
+            ay = 0
+            for agentB in self.Agent_list:
+                if agentA.id != agentB.id and agentB in agentA.neighbours():
+                    ax += agentA.k*(distance(agentA, agentB) -
+                                    agentA.l0)*vect_AB(agentA, agentB)[0]-f*agentA.speed[0]
+                    ay += agentA.k*(distance(agentA, agentB) -
+                                    agentA.l0)*vect_AB(agentA, agentB)[1]-f*agentA.speed[1]
+
+            agentA.acc = np.array([ax, ay])
+
+        for agent in self.Agent_list:
+            agent.speed[0] = agent.speed[0] + dt*agent.acc[0]
+            agent.speed[1] = agent.speed[1] + dt*agent.acc[1]
+            agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
+            agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
+
+            if agent.pos[0] < 0:
+                agent.pos[0] = 0
+                agent.speed[0] = 0
+            if agent.pos[0] > self.width:
+                agent.pos[0] = self.width
+                agent.speed[0] = 0
+            if agent.pos[1] < 0:
+                agent.pos[1] = 0
+                agent.speed[1] = 0
+            if agent.pos[1] > self.height:
+                agent.pos[1] = self.height
+                agent.speed[1] = 0
+
     def draw_graph(self):
         """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins)"""
-        edge_list=[]
+        edge_list = []
         for agent in self.Agent_list:
             if type(agent) == Drone:
                 for neighbour in agent.neighbours():
-                    if type(neighbour)==Drone:
-                        if [(neighbour.x,neighbour.y),(agent.x,agent.y)] not in edge_list and [(agent.x,agent.y),(neighbour.x,neighbour.y)] not in edge_list:
-                            edge_list.append([(neighbour.x,neighbour.y),(agent.x,agent.y)])
+                    if type(neighbour) == Drone:
+                        if [(neighbour.pos[0], neighbour.pos[1]), (agent.pos[0], agent.pos[1])] not in edge_list and [(agent.pos[0], agent.pos[1]), (neighbour.pos[0], neighbour.pos[1])] not in edge_list:
+                            edge_list.append(
+                                [(neighbour.pos[0], neighbour.pos[1]), (agent.pos[0], agent.pos[1])])
 
         for edge in edge_list:
-            pygame.draw.line(screen,white,(edge[0][0],edge[0][1]),(edge[1][0],edge[1][1]))
+            pygame.draw.line(
+                screen, white, (edge[0][0], edge[0][1]), (edge[1][0], edge[1][1]))
 
 
 def distance(Agent1, Agent2):
     """ distance entre deux agents """
-    x1, y1 = Agent1.x, Agent1.y
-    x2, y2 = Agent2.x, Agent2.y
+    x1, y1 = Agent1.pos
+    x2, y2 = Agent2.pos
 
     d = math.sqrt((x1-x2)**2+(y1-y2)**2)
     return d
@@ -255,6 +291,13 @@ def point_distance(x1, y1, x2, y2):
     """ distance entre deux points """
     d = math.sqrt((x1-x2)**2+(y1-y2)**2)
     return d
+
+
+def vect_AB(agentA, agentB):
+    v_x = agentB.pos[0]-agentA.pos[0]
+    v_y = agentB.pos[1]-agentA.pos[1]
+
+    return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
 
 
 if __name__ == '__main__':
@@ -275,7 +318,7 @@ if __name__ == '__main__':
             if event.type == pygame.QUIT:
                 Running = False
 
-        env.step()
+        env.update()
         for agent in env.Agent_list:
             agent.display()
         env.draw_graph()
