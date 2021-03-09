@@ -464,6 +464,8 @@ if __name__ == '__main__':
     # Screen Update Speed (FPS)
     clock = pygame.time.Clock()
 
+    print_circles = True
+
     while Running:
         t += dt
         for event in pygame.event.get():
@@ -474,7 +476,8 @@ if __name__ == '__main__':
         for agent in env.Agent_list:
             agent.display()
         env.draw_graph()
-        env.map_circle_c()
+        if print_circles:
+            env.map_circle_c()
         pygame.display.update()
         screen.fill((0, 0, 0))
         # Setting FPS
