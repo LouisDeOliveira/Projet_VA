@@ -14,6 +14,9 @@ lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
 
+circle_list = []
+
+
 #Basé sur le fichier de Louis du 09/03/21
 
 class Chercheur():
@@ -422,7 +425,16 @@ class Environment():
             pygame.draw.line(screen,white,(edge[0][0],edge[0][1]),(edge[1][0],edge[1][1]))
         for edge in edge_list_v:
             pygame.draw.line(screen,lightgreen,(edge[0][0],edge[0][1]),(edge[1][0],edge[1][1]))        
+    
 
+
+    def map_circle_c(self):
+        for agent in self.Agent_list:
+            if type(agent)==Chercheur:
+                circle_list.append((agent.x, agent.y))
+        for coord in circle_list:
+            pygame.draw.circle(screen, shadow, coord, 10)
+        
 
 
 def distance(Agent1, Agent2):
@@ -462,6 +474,7 @@ if __name__ == '__main__':
         for agent in env.Agent_list:
             agent.display()
         env.draw_graph()
+        env.map_circle_c()
         pygame.display.update()
         screen.fill((0, 0, 0))
         # Setting FPS
