@@ -10,6 +10,18 @@ f = 0.01
 maxacc = 300.0
 
 
+class Message():
+    def __init__(self, sender, receiver):
+        self.sender = sender
+        self.receiver = receiver
+        self.genre = receiver.type
+        self.x = sender.x
+        self.y = sender.z
+        self.dir = sender.dir
+        self.speed = sender.speed
+        self.battery = sender.battery
+
+
 class Drone():
     """
     speed : int/float : vitess du drone
@@ -43,8 +55,6 @@ class Drone():
         self.id = id
         self.destination = None
         self.inbox = []
-        self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
-                                                                                                      'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
 
     def make_message(self, recipient):
         self.message['sender_id'] = self.id
@@ -63,8 +73,19 @@ class Drone():
             self.message['message']['alert']['t_y'] = self.target.y
             self.message['message']['alert']['t_z'] = self.target.z
 
+    def send_message_alerte(self):
+        for drone in neighbours(self):
+            if drone.type = Vérificateur or drone.type = Chercheurs:
+                self.message = Message(self, drone)
+                drone.inbox.append(message)
+
+    def send_message_position(self):
+        for drone in neighbours(self):
+            if drone.type = Chercheurs:
+                self.message = Message(self, drone)
+                drone.inbox.append(message)
+
     def read_message(self):
-        pass
 
     def send_message(self):
         pass
