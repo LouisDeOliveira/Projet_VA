@@ -318,10 +318,13 @@ class Environment():
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur:
                         if agentA.id != agentB.id and agentB in agentA.neighbours():
-                            ax += agentA.k*(distance(agentA, agentB) -
-                                            agentA.l0)*vect_AB(agentA, agentB)[0]-f*agentA.speed[0]
-                            ay += agentA.k*(distance(agentA, agentB) -
-                                            agentA.l0)*vect_AB(agentA, agentB)[1]-f*agentA.speed[1]
+                            f_ressort_x = agentA.k*(distance(agentA, agentB) - agentA.l0)*vect_AB(agentA, agentB)[0]
+                            f_frott_x = f*agentA.speed[0]
+                            f_ressort_y = agentA.k*(distance(agentA, agentB) - agentA.l0)*vect_AB(agentA, agentB)[1]
+                            f_frott_y = f*agentA.speed[1]
+
+                            ax += f_ressort_x - f_frott_x
+                            ay += f_ressort_y - f_frott_y
 
                 vect_acc = np.array([ax, ay])
                 if vect_norme_carre(vect_acc) > maxacc**2:
