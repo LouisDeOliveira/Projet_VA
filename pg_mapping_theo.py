@@ -453,7 +453,7 @@ def point_distance(x1, y1, x2, y2):
 
 
 if __name__ == '__main__':
-    env = Environment(10, 3, 0, 750, 750)
+    env = Environment(10, 3, 1, 750, 750)
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
