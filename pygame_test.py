@@ -6,7 +6,7 @@ import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 0.01
+f = 0.1
 maxacc = 300.0
 
 
@@ -173,17 +173,16 @@ class Target():
     def __init__(self, x, y, speed, direction, size, id, env):
         self.id = id
         self.speed = speed
+        self.acc = acc
         self.env = env
-        self.x = x
-        self.y = y
+        self.pos = x, y
         self.dir = direction
         self.size = size
         self.targeted = False
 
     def display(self):
         a = self.dir
-        x = self.x
-        y = self.y
+        x, y = self.pos
         s = self.size
 
         pygame.draw.line(screen, red,
@@ -264,18 +263,33 @@ class Environment():
 
     def draw_graph(self):
         """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins)"""
-        edge_list = []
+        edge_list_c = []
+        edge_list_v = []
         for agent in self.Agent_list:
-            if type(agent) == Drone:
+            if type(agent) == Chercheur:
                 for neighbour in agent.neighbours():
-                    if type(neighbour) == Drone:
-                        if [(neighbour.pos[0], neighbour.pos[1]), (agent.pos[0], agent.pos[1])] not in edge_list and [(agent.pos[0], agent.pos[1]), (neighbour.pos[0], neighbour.pos[1])] not in edge_list:
-                            edge_list.append(
-                                [(neighbour.pos[0], neighbour.pos[1]), (agent.pos[0], agent.pos[1])])
+                    if type(neighbour) == Chercheur:
+                        if [(neighbour.x, neighbour.y), (agent.x, agent.y)] not in edge_list_c and [(agent.x, agent.y), (neighbour.x, neighbour.y)] not in edge_list_c:
+                            edge_list_c.append(
+                                [(neighbour.x, neighbour.y), (agent.x, agent.y)])
 
-        for edge in edge_list:
+            if type(agent) == Verificateur:
+                for neighbour in agent.neighbours():
+                    if type(neighbour) == Chercheur:
+                        if [(neighbour.x, neighbour.y), (agent.x, agent.y)] not in edge_list_v and [(agent.x, agent.y), (neighbour.x, neighbour.y)] not in edge_list_v:
+                            edge_list_v.append(
+                                [(neighbour.x, neighbour.y), (agent.x, agent.y)])
+                    if type(neighbour) == Verificateur:
+                        if [(neighbour.x, neighbour.y), (agent.x, agent.y)] not in edge_list_v and [(agent.x, agent.y), (neighbour.x, neighbour.y)] not in edge_list_v:
+                            edge_list_v.append(
+                                [(neighbour.x, neighbour.y), (agent.x, agent.y)])
+
+        for edge in edge_list_c:
             pygame.draw.line(
                 screen, white, (edge[0][0], edge[0][1]), (edge[1][0], edge[1][1]))
+        for edge in edge_list_v:
+            pygame.draw.line(screen, lightgreen,
+                             (edge[0][0], edge[0][1]), (edge[1][0], edge[1][1]))
 
 
 def distance(Agent1, Agent2):
