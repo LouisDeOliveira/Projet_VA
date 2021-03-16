@@ -6,8 +6,8 @@ import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 0.3
-maxacc = 30.0
+f = 0.4
+maxacc = 900.0
 maxspeed = 10.0
 circle_list = []
 shadow = (80, 80, 80)
@@ -42,7 +42,7 @@ class Chercheur():
         self.pos = np.array([x, y])
         self.speed = np.array([0, 0])
         self.acc = np.array([0, 0])
-        self.k = 5
+        self.k = 12
         self.l0 = 150
         self.maxspeed = speed
         self.state = 'normal'
@@ -323,7 +323,11 @@ class Environment():
                             ay += agentA.k*(distance(agentA, agentB) -
                                             agentA.l0)*vect_AB(agentA, agentB)[1]-f*agentA.speed[1]
 
-                agentA.acc = np.array([ax, ay])
+                vect_acc = np.array([ax, ay])
+                if vect_norme_carre(vect_acc) > maxacc**2:
+                    agentA.acc = maxacc*normalize_vector(vect_acc)
+                else:
+                    agentA.acc = vect_acc
 
         for agent in self.Agent_list:
             agent.speed[0] = agent.speed[0] + dt*agent.acc[0]
@@ -402,6 +406,14 @@ def vect_AB(agentA, agentB):
     v_y = agentB.pos[1]-agentA.pos[1]
 
     return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
+
+
+def vect_norme_carre(vect):
+    return vect[0]**2 + vect[1]**2
+
+
+def normalize_vector(vect):
+    return vect/np.sqrt(vect_norme_carre(vect))
 
 
 if __name__ == '__main__':
