@@ -6,7 +6,7 @@ import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 0.1
+f = 0.01
 maxacc = 300.0
 
 
@@ -32,7 +32,7 @@ class Drone():
         self.pos = np.array([x, y])
         self.speed = np.array([0, 0])
         self.acc = np.array([0, 0])
-        self.k = 1
+        self.k = 10
         self.l0 = 150
         self.maxspeed = speed
         self.state = 'normal'
@@ -306,7 +306,7 @@ if __name__ == '__main__':
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
     Running = True
-    tick_freq = 60
+    tick_freq = 100
     dt = 1/tick_freq
     t = 0
     # Screen Update Speed (FPS)
