@@ -7,8 +7,8 @@ import numpy as np
 white = (255, 255, 255)
 red = (255, 0, 0)
 f = 0.4
-maxacc = 900.0
-maxspeed = 10.0
+maxacc = 500.0
+maxspeed = 30.0
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -136,7 +136,7 @@ class Verificateur():
         self.acc = np.array([0, 0])
         self.k = 10
         self.l0 = 150
-        self.maxspeed = speed
+        self.maxspeed = maxspeed
         self.state = 'normal'
         self.battery = None
         self.dir = direction
@@ -333,8 +333,12 @@ class Environment():
                     agentA.acc = vect_acc
 
         for agent in self.Agent_list:
-            agent.speed[0] = agent.speed[0] + dt*agent.acc[0]
-            agent.speed[1] = agent.speed[1] + dt*agent.acc[1]
+            vect_vit = np.array([agent.speed[0] + dt*agent.acc[0],agent.speed[1] + dt*agent.acc[1]])
+            if vect_norme_carre(vect_vit) > maxspeed**2:
+                agentA.speed = maxspeed*normalize_vector(vect_vit)
+            else:
+                agent.speed = vect_vit
+            
             agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
             agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
 
