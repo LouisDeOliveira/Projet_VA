@@ -6,9 +6,15 @@ import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
+<<<<<<< HEAD
 f = 0.4
 maxacc = 500.0
 maxspeed = 30.0
+=======
+f = 1
+maxacc = 900.0
+maxspeed = 10.0
+>>>>>>> mesh
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -40,8 +46,8 @@ class Chercheur():
         self.speed = speed
         self.env = env
         self.pos = np.array([x, y])
-        self.speed = np.array([0, 0])
-        self.acc = np.array([0, 0])
+        self.speed = np.array([0., 0.])
+        self.acc = np.array([0., 0.])
         self.k = 12
         self.l0 = 150
         self.maxspeed = speed
@@ -132,8 +138,8 @@ class Verificateur():
         self.speed = speed
         self.env = env
         self.pos = np.array([x, y])
-        self.speed = np.array([0, 0])
-        self.acc = np.array([0, 0])
+        self.speed = np.array([0., 0.])
+        self.acc = np.array([0., 0.])
         self.k = 10
         self.l0 = 150
         self.maxspeed = maxspeed
@@ -284,6 +290,13 @@ class Target():
                 self .destination = self.target.x, self.target.y
 
 
+class Charges():
+    def __init__(self, value, pos, env):
+        self.value = value
+        self.pos = pos
+        self.env = env
+
+
 class Environment():
     """
     width : int : largeur de l'écran
@@ -392,6 +405,27 @@ class Environment():
         for circle in circle_list:
             pygame.draw.circle(screen, shadow, circle, 10)
 
+    def mesh_env(self, res=50):
+        width = self.width
+        height = self.height
+        c_width = 0
+        c_height = 0
+        point_list = []
+        while c_height <= height:
+            while c_width <= width:
+                point_list.append((c_width, c_height))
+                c_width += res
+            c_width = 0
+            c_height += res
+        self.mesh = point_list
+
+    def show_mesh(self):
+        if self.mesh == None:
+            pass
+        else:
+            for point in self.mesh:
+                pygame.draw.circle(screen, red, point, 3)
+
 
 def distance(Agent1, Agent2):
     """ distance entre deux agents """
@@ -435,7 +469,7 @@ if __name__ == '__main__':
     t = 0
     # Screen Update Speed (FPS)
     clock = pygame.time.Clock()
-
+    env.mesh_env()
     while Running:
         t += dt
         for event in pygame.event.get():
@@ -448,6 +482,7 @@ if __name__ == '__main__':
             agent.display()
 
         env.draw_graph()
+        env.show_mesh()
         pygame.display.update()
         screen.fill((0, 0, 0))
 
