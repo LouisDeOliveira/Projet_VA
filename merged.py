@@ -6,15 +6,9 @@ import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-<<<<<<< HEAD
-f = 0.4
-maxacc = 500.0
-maxspeed = 30.0
-=======
 f = 1
 maxacc = 900.0
 maxspeed = 10.0
->>>>>>> mesh
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -116,6 +110,9 @@ class Chercheur():
         """ liste des agents (Chercheur ou Target) à distance <= r du Chercheur """
 
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
+
+    def check_mesh(self):
+        pass
 
 
 class Verificateur():
@@ -331,9 +328,13 @@ class Environment():
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur:
                         if agentA.id != agentB.id and agentB in agentA.neighbours():
-                            f_ressort_x = agentA.k*(distance(agentA, agentB) - agentA.l0)*vect_AB(agentA, agentB)[0]
+                            f_ressort_x = agentA.k * \
+                                (distance(agentA, agentB) - agentA.l0) * \
+                                vect_AB(agentA, agentB)[0]
                             f_frott_x = f*agentA.speed[0]
-                            f_ressort_y = agentA.k*(distance(agentA, agentB) - agentA.l0)*vect_AB(agentA, agentB)[1]
+                            f_ressort_y = agentA.k * \
+                                (distance(agentA, agentB) - agentA.l0) * \
+                                vect_AB(agentA, agentB)[1]
                             f_frott_y = f*agentA.speed[1]
 
                             ax += f_ressort_x - f_frott_x
@@ -346,12 +347,13 @@ class Environment():
                     agentA.acc = vect_acc
 
         for agent in self.Agent_list:
-            vect_vit = np.array([agent.speed[0] + dt*agent.acc[0],agent.speed[1] + dt*agent.acc[1]])
+            vect_vit = np.array(
+                [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
             if vect_norme_carre(vect_vit) > maxspeed**2:
                 agentA.speed = maxspeed*normalize_vector(vect_vit)
             else:
                 agent.speed = vect_vit
-            
+
             agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
             agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
 
@@ -405,25 +407,17 @@ class Environment():
         for circle in circle_list:
             pygame.draw.circle(screen, shadow, circle, 10)
 
-    def mesh_env(self, res=50):
-        width = self.width
-        height = self.height
-        c_width = 0
-        c_height = 0
-        point_list = []
-        while c_height <= height:
-            while c_width <= width:
-                point_list.append((c_width, c_height))
-                c_width += res
-            c_width = 0
-            c_height += res
-        self.mesh = point_list
+    def mesh_matrix(self, res=50):
+        m_width = int(np.floor(self.width/res))+1
+        m_height = int(np.floor(self.height/res))+1
+        mesh = np.ones((m_height, m_width))
+        self.mesh = mesh
 
-    def show_mesh(self):
-        if self.mesh == None:
-            pass
-        else:
-            for point in self.mesh:
+    def show_mesh(self, res=50):
+        size = np.shape(self.mesh)
+        for i in range(size[0]):
+            for j in range(size[1]):
+                point = (j*res, i*res)
                 pygame.draw.circle(screen, red, point, 3)
 
 
@@ -462,14 +456,13 @@ if __name__ == '__main__':
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
-    screen2 = pygame.display.set_mode((width, height))
     Running = True
     tick_freq = 100
     dt = 1/tick_freq
     t = 0
     # Screen Update Speed (FPS)
     clock = pygame.time.Clock()
-    env.mesh_env()
+    env.mesh_matrix()
     while Running:
         t += dt
         for event in pygame.event.get():
