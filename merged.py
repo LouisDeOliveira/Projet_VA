@@ -34,6 +34,7 @@ class Chercheur():
     destination : tuple : destination du drone
     inbox : list : liste des messages reçus par le drone
     message :  dict : message a envoyer
+
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
@@ -147,6 +148,7 @@ class Verificateur():
     destination : tuple : destination du drone
     inbox : list : liste des messages reçus par le drone
     message :  dict : message a envoyer
+
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
@@ -355,8 +357,13 @@ class Environment():
                                 (distance(agentA, agentB) - agentA.l0) * \
                                 vect_AB(agentA, agentB)[1]
                             f_frott_y = f*agentA.speed[1]
-
+                            f_charge_x = 0
+                            f_charge_y = 0
                             # forces attractive du maillage
+                            size = np.shape(self.env.mesh)
+                            for i in range(size[0]):
+                                for j in range(size[1]):
+                                    if self.env.mesh[i][j] == 1:
 
                             ax += f_ressort_x - f_frott_x
                             ay += f_ressort_y - f_frott_y
