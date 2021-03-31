@@ -34,7 +34,6 @@ class Chercheur():
     destination : tuple : destination du drone
     inbox : list : liste des messages reçus par le drone
     message :  dict : message a envoyer
-
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
@@ -148,7 +147,6 @@ class Verificateur():
     destination : tuple : destination du drone
     inbox : list : liste des messages reçus par le drone
     message :  dict : message a envoyer
-
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
