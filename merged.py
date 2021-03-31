@@ -358,6 +358,8 @@ class Environment():
                                 vect_AB(agentA, agentB)[1]
                             f_frott_y = f*agentA.speed[1]
 
+                            # forces attractive du maillage
+
                             ax += f_ressort_x - f_frott_x
                             ay += f_ressort_y - f_frott_y
 
