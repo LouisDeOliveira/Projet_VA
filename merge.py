@@ -50,11 +50,6 @@ class Chercheur():
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
-        self.speed = speed
-        self.env = env
-        self.pos = np.array([x, y])
-        self.speed = np.array([0, 0])
-        self.acc = np.array([0, 0])
         self.k = 5
         self.l0 = 150
         self.maxspeed = speed
@@ -68,15 +63,17 @@ class Chercheur():
         self.inbox = []
         self.neighbours = {} np.array([drone.pos for drone in neighbours])
 
+
+"""
     def neighbours(self, r=200):
-        """ liste des agents (Chercheur ou Target) à distance <= r du Chercheur """
+         liste des agents (Chercheur ou Target) à distance <= r du Chercheur
         n = {}
         for i in range(len(self.env.Agent_list)):
-            if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]:
+            if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self:
                   n[self.env.Agent_list[i]]= self.env.Agent_list[i].pos
-        return n
+        return n """
 
-    def detect_target(self):
+   def detect_target(self):
         for objet in neighbours(self, r=200):
             if objet.type == Target:
                 self.target.append(objet)
@@ -85,22 +82,23 @@ class Chercheur():
         for drone in neighbours(self):
             if drone.type == Verificateur or drone.type == Chercheur:
                 message = Message(self, drone)
-                message.genre= alert
+                message.genre = alert
                 drone.inbox.append(message)
 
     def send_message_position(self):
         for drone in neighbours(self):
             if drone.type == Chercheur:
                 message = Message(self, drone)
-                message.genre= pos
+                message.genre = pos
                 drone.inbox.append(message)
 
-    def read_message(self):
+    def message_pos(self):
         while len(self.inbox) >= 1:
-            message= self.inbox.pop()
+            message = self.inbox.pop()
             if message.genre == pos:
-                for drone in neighbours
-
+                neighbours[message.sender] = [message.x,message.y]
+            if message.genre == alerte:
+                self.target.append(message.target)
 
     def score(self):
         pass
@@ -131,22 +129,22 @@ class Chercheur():
 
     def distance(Agent1, Agent2):
         """ distance entre deux agents """
-        x1, y1=Agent1.pos
-        x2, y2=Agent2.pos
+        x1, y1 = Agent1.pos
+        x2, y2 = Agent2.pos
 
-        d=math.sqrt((x1-x2)**2+(y1-y2)**2)
+        d = math.sqrt((x1-x2)**2+(y1-y2)**2)
         return d
 
 
 def point_distance(x1, y1, x2, y2):
     """ distance entre deux points """
-    d=math.sqrt((x1-x2)**2+(y1-y2)**2)
+    d = math.sqrt((x1-x2)**2+(y1-y2)**2)
     return d
 
 
 def vect_AB(agentA, agentB):
-    v_x=agentB.pos[0]-agentA.pos[0]
-    v_y=agentB.pos[1]-agentA.pos[1]
+    v_x = agentB.pos[0]-agentA.pos[0]
+    v_y = agentB.pos[1]-agentA.pos[1]
 
     return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
 
@@ -159,25 +157,25 @@ def vect_AB(agentA, agentB):
                     ay += self.k*(distance(self, agent) -
                                   self.l0)*vect_AB(agentA, agentB)[1]-f*self.speed[1]
 
-            self.acc=np.array([ax, ay])
+            self.acc = np.array([ax, ay])
 
-        self.speed[0]=self.speed[0] + dt*self.acc[0]
-        self.speed[1]=self.speed[1] + dt*self.acc[1]
-        self.pos[0]=self.pos[0] + dt*self.speed[0]
-        self.pos[1]=self.pos[1] + dt*self.speed[1]
+        self.speed[0] = self.speed[0] + dt*self.acc[0]
+        self.speed[1] = self.speed[1] + dt*self.acc[1]
+        self.pos[0] = self.pos[0] + dt*self.speed[0]
+        self.pos[1] = self.pos[1] + dt*self.speed[1]
 
         if self.pos[0] < 0:
-            self.pos[0]=0
-            self.speed[0]=0
+            self.pos[0] = 0
+            self.speed[0] = 0
         if self.pos[0] > env.width:
-            self.pos[0]=env.width
-            self.speed[0]=0
+            self.pos[0] = env.width
+            self.speed[0] = 0
         if self.pos[1] < 0:
-            self.pos[1]=0
-            self.speed[1]=0
+            self.pos[1] = 0
+            self.speed[1] = 0
         if self.pos[1] > env.height:
-            self.pos[1]=env.height
-            self.speed[1]=0
+            self.pos[1] = env.height
+            self.speed[1] = 0
 
 
 class Verificateur():
@@ -197,38 +195,38 @@ class Verificateur():
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
-        self.speed=speed
-        self.env=env
-        self.pos=np.array([x, y])
-        self.speed=np.array([0, 0])
-        self.acc=np.array([0, 0])
-        self.k=10
-        self.l0=150
-        self.maxspeed=speed
-        self.state='normal'
-        self.battery=None
-        self.dir=direction
-        self.size=size
-        self.target=None
-        self.id=id
-        self.destination=None
-        self.inbox=[]
-        self.message={'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
-                                                                                                      'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
+        self.speed = speed
+        self.env = env
+        self.pos = np.array([x, y])
+        self.speed = np.array([0, 0])
+        self.acc = np.array([0, 0])
+        self.k = 10
+        self.l0 = 150
+        self.maxspeed = speed
+        self.state = 'normal'
+        self.battery = None
+        self.dir = direction
+        self.size = size
+        self.target = None
+        self.id = id
+        self.destination = None
+        self.inbox = []
+        self.message ={'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
+                                                                                                    'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
 
     def target_agent(self):
         """ Attribue en tant que cible la cible la plus proche du champ de vision du drone si celui-ci n'en a pas déjà une """
 
         if self.target == None:
-            min_distance=math.inf
-            best_agent=None
+            min_distance = math.inf
+            best_agent = None
             for agent in self.neighbours():
                 if type(agent) == Target:
                     if distance(self, agent) < min_distance and agent.targeted == False:
-                        min_distance=distance(self, agent)
-                        best_agent=agent
+                        min_distance = distance(self, agent)
+                        best_agent = agent
             if best_agent != None:
-                best_agent.targeted=True
+                best_agent.targeted = True
             return best_agent
         else:
             return self.target
@@ -237,7 +235,7 @@ class Verificateur():
 
         try:
 
-            d=point_distance(
+            d =point_distance(
                 self.x, self.y, self.destination[0], self.destination[1])
 
             cosr = (self.destination[0] - self.x)/d
