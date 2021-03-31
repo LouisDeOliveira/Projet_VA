@@ -52,6 +52,8 @@ class Chercheur():
     def __init__(self, x, y, speed, direction, size, id, env):
         self.k = 5
         self.l0 = 150
+        self.speed = np.array([0., 0.])
+        self.acc = np.array([0., 0.])
         self.maxspeed = speed
         self.state = 'normal'
         self.battery = None
@@ -61,17 +63,16 @@ class Chercheur():
         self.id = id
         self.destination = None
         self.inbox = []
-        self.neighbours = {} np.array([drone.pos for drone in neighbours])
+        self.Environment = Environment
+        self.neighbours_pos = {} np.array([drone.pos for drone in neighbours])
 
-
-"""
     def neighbours(self, r=200):
-         liste des agents (Chercheur ou Target) à distance <= r du Chercheur
-        n = {}
+         liste des agents(Chercheur ou Target) à distance <= r du Chercheur
+        n = []
         for i in range(len(self.env.Agent_list)):
             if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self:
-                  n[self.env.Agent_list[i]]= self.env.Agent_list[i].pos
-        return n """
+                  n.append(self.env.Agent_list[i])
+        return n 
 
    def detect_target(self):
         for objet in neighbours(self, r=200):
@@ -136,17 +137,68 @@ class Chercheur():
         return d
 
 
-def point_distance(x1, y1, x2, y2):
+    def point_distance(x1, y1, x2, y2):
     """ distance entre deux points """
-    d = math.sqrt((x1-x2)**2+(y1-y2)**2)
-    return d
+        d = math.sqrt((x1-x2)**2+(y1-y2)**2)
+        return d
 
 
-def vect_AB(agentA, agentB):
-    v_x = agentB.pos[0]-agentA.pos[0]
-    v_y = agentB.pos[1]-agentA.pos[1]
+    def vect_AB(agentA, agentB):
+        v_x = agentB.pos[0]-agentA.pos[0]
+        v_y = agentB.pos[1]-agentA.pos[1]
 
-    return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
+        return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
+
+    def update(self):
+        width= self.Environment.width 
+        height = self.Environment.height
+        Agent_list = self.Environment.Agent_list 
+        ax = 0
+        ay = 0
+        for agent in Agent_list:
+            if type(agent) == Chercheur:
+                if self.id != agent.id and agent in self.neighbours():
+                    f_ressort_x = self.k * \
+                        (distance(self, agent) - self.l0) * \
+                        vect_AB(self, agent)[0]
+                    f_frott_x = f*self.speed[0]
+                    f_ressort_y = self.k * \
+                        (distance(self, agent) - self.l0) * \
+                        vect_AB(self, agent)[1]
+                    f_frott_y = f*self.speed[1]
+
+                    ax += f_ressort_x - f_frott_x
+                    ay += f_ressort_y - f_frott_y
+
+        vect_acc = np.array([ax, ay])
+        if vect_norme_carre(vect_acc) > maxacc**2:
+            self.acc = maxacc*normalize_vector(vect_acc)
+        else:
+            self.acc = vect_acc
+
+        for agent in self.Agent_list:
+            vect_vit = np.array(
+                [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
+            if vect_norme_carre(vect_vit) > maxspeed**2:
+                self.speed = maxspeed*normalize_vector(vect_vit)
+            else:
+                agent.speed = vect_vit
+
+            agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
+            agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
+
+            if agent.pos[0] < 0:
+                agent.pos[0] = 0
+                agent.speed[0] = 0
+            if agent.pos[0] > width:
+                agent.pos[0] =width
+                agent.speed[0] = 0
+            if agent.pos[1] < 0:
+                agent.pos[1] = 0
+                agent.speed[1] = 0
+            if agent.pos[1] > height:
+                agent.pos[1] = height
+                agent.speed[1] = 0
 
     def update(self):
         for agent in neighbours():
@@ -355,11 +407,11 @@ class Environment():
     width : int : largeur de l'écran
     height : int : hauteur de l'écran
     Agent_list : list : liste de tous les agents (Chercheur et Target) de l'environment"""
-
     def __init__(self, n_chercheurs, n_verificateurs, n_targets, width, height):
         self.width = width
         self.height = height
         self.Agent_list = []
+        self.res = 50
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
@@ -372,9 +424,6 @@ class Environment():
             self.Agent_list.append(Verificateur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
 
-    def step(self):
-        for agent in self.Agent_list:
-            agent.step()
 
     def update(self):
         for agentA in self.Agent_list:
