@@ -18,6 +18,7 @@ lightblue = (0, 0, 255)
 lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
+res = 150
 
 
 class Chercheur():
@@ -110,6 +111,28 @@ class Chercheur():
         """ liste des agents (Chercheur ou Target) à distance <= r du Chercheur """
 
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
+
+    def check_mesh(self):
+        colonne = round(self.pos[0] / self.env.res)
+        ligne = round(self.pos[1] / self.env.res)
+        if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*ligne) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*(ligne+1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne+1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne), self.env.res*(ligne-1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne-1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
 
 
 class Verificateur():
@@ -301,6 +324,7 @@ class Environment():
         self.width = width
         self.height = height
         self.Agent_list = []
+        self.res = 50
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
@@ -325,9 +349,13 @@ class Environment():
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur:
                         if agentA.id != agentB.id and agentB in agentA.neighbours():
-                            f_ressort_x = agentA.k*(distance(agentA, agentB) - agentA.l0)*vect_AB(agentA, agentB)[0]
+                            f_ressort_x = agentA.k * \
+                                (distance(agentA, agentB) - agentA.l0) * \
+                                vect_AB(agentA, agentB)[0]
                             f_frott_x = f*agentA.speed[0]
-                            f_ressort_y = agentA.k*(distance(agentA, agentB) - agentA.l0)*vect_AB(agentA, agentB)[1]
+                            f_ressort_y = agentA.k * \
+                                (distance(agentA, agentB) - agentA.l0) * \
+                                vect_AB(agentA, agentB)[1]
                             f_frott_y = f*agentA.speed[1]
 
                             ax += f_ressort_x - f_frott_x
@@ -340,12 +368,13 @@ class Environment():
                     agentA.acc = vect_acc
 
         for agent in self.Agent_list:
-            vect_vit = np.array([agent.speed[0] + dt*agent.acc[0],agent.speed[1] + dt*agent.acc[1]])
+            vect_vit = np.array(
+                [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
             if vect_norme_carre(vect_vit) > maxspeed**2:
                 agentA.speed = maxspeed*normalize_vector(vect_vit)
             else:
                 agent.speed = vect_vit
-            
+
             agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
             agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
 
@@ -397,28 +426,21 @@ class Environment():
             if type(agent) == Chercheur:
                 circle_list.append((agent.pos[0], agent.pos[1]))
         for circle in circle_list:
-            pygame.draw.circle(screen, shadow, circle, 10)
+            pygame.draw.circle(screen, shadow, circle, self.res/2)
 
-    def mesh_env(self, res=50):
-        width = self.width
-        height = self.height
-        c_width = 0
-        c_height = 0
-        point_list = []
-        while c_height <= height:
-            while c_width <= width:
-                point_list.append((c_width, c_height))
-                c_width += res
-            c_width = 0
-            c_height += res
-        self.mesh = point_list
+    def mesh_matrix(self):
+        m_width = int(np.floor(self.width/self.res))+1
+        m_height = int(np.floor(self.height/self.res))+1
+        mesh = np.ones((m_height, m_width))
+        self.mesh = mesh
 
     def show_mesh(self):
-        if self.mesh == None:
-            pass
-        else:
-            for point in self.mesh:
-                pygame.draw.circle(screen, red, point, 3)
+        size = np.shape(self.mesh)
+        for i in range(size[0]):
+            for j in range(size[1]):
+                if self.mesh[i][j] == 1:
+                    point = (j*self.res, i*self.res)
+                    pygame.draw.circle(screen, red, point, 3)
 
 
 def distance(Agent1, Agent2):
@@ -456,14 +478,13 @@ if __name__ == '__main__':
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
-    screen2 = pygame.display.set_mode((width, height))
     Running = True
     tick_freq = 100
     dt = 1/tick_freq
     t = 0
     # Screen Update Speed (FPS)
     clock = pygame.time.Clock()
-    env.mesh_env()
+    env.mesh_matrix()
     while Running:
         t += dt
         for event in pygame.event.get():
@@ -473,6 +494,8 @@ if __name__ == '__main__':
         env.update()
         env.show_circles()
         for agent in env.Agent_list:
+            if type(agent) == Chercheur:
+                agent.check_mesh()
             agent.display()
 
         env.draw_graph()
