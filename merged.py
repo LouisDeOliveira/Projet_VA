@@ -6,15 +6,9 @@ import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-<<<<<<< HEAD
-f = 0.4
-maxacc = 500.0
-maxspeed = 30.0
-=======
 f = 1
 maxacc = 900.0
 maxspeed = 10.0
->>>>>>> mesh
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
