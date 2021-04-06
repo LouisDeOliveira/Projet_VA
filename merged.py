@@ -114,26 +114,29 @@ class Chercheur():
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def check_mesh(self):
-        colonne = round(self.pos[0] / self.env.res)
-        ligne = round(self.pos[1] / self.env.res)
-        if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*ligne) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*(ligne+1)) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne+1)) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne), self.env.res*(ligne-1)) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne)) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne-1)) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
-        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
-            self.env.mesh[ligne][colonne] = 0
+        try:
+            colonne = round(self.pos[0] / self.env.res)
+            ligne = round(self.pos[1] / self.env.res)
+            if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*ligne) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*(ligne+1)) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne+1)) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne), self.env.res*(ligne-1)) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne)) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne-1)) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
+                self.env.mesh[ligne][colonne] = 0
+        except:
+            pass
 
 
 class Verificateur():
