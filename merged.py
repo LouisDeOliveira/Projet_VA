@@ -7,8 +7,8 @@ import numpy as np
 white = (255, 255, 255)
 red = (255, 0, 0)
 f = 1
-maxacc = 90000.0
-maxspeed = 1000.0
+maxacc = 900.0
+maxspeed = 100.0
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -343,6 +343,7 @@ class Environment():
             agent.step()
 
     def update(self):
+        self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
         for agentA in self.Agent_list:
             if type(agentA) == Chercheur:
                 ax = 0
@@ -376,9 +377,9 @@ class Environment():
                             vect = vect/r
                             f_charge_x += -k/(r**2)*vect[0]
                             f_charge_y += -k/(r**2)*vect[1]
-
-                ax += f_charge_x
-                ay += f_charge_y
+                if self.active_nodes() > 0:
+                    ax += f_charge_x*self.N0/self.active_nodes()
+                    ay += f_charge_y*self.N0/self.active_nodes()
 
                 vect_acc = np.array([ax, ay])
                 if vect_norme_carre(vect_acc) > maxacc**2:
@@ -461,6 +462,15 @@ class Environment():
                     point = (j*self.res, i*self.res)
                     pygame.draw.circle(screen, red, point, 3)
 
+    def active_nodes(self):
+        N = 0
+        size = np.shape(self.mesh)
+        for i in range(size[0]):
+            for j in range(size[1]):
+                if self.mesh[i][j] == 1:
+                    N += 1
+        return N
+
 
 def distance(Agent1, Agent2):
     """ distance entre deux agents """
@@ -493,7 +503,7 @@ def normalize_vector(vect):
 
 
 if __name__ == '__main__':
-    env = Environment(4, 2, 0, 750, 750)
+    env = Environment(5, 0, 0, 750, 750)
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
