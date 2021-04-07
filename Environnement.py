@@ -25,6 +25,7 @@ res = 150
 k = 50000
 tick_freq = 100
 dt = 1/tick_freq
+q = 100000
 
 
 class Environment():
@@ -54,6 +55,19 @@ class Environment():
     def step(self):
         for agent in self.Agent_list:
             agent.step()
+
+    def barycentre(self):
+        gx = 0
+        gy = 0
+        g = np.zeros(2)
+        n = 0
+        for agent in self.Agent_list:
+            if type(agent) == Chercheur:
+                n += 1
+                gx += agent.pos[0]
+                gy += agent.pos[1]
+        g[0], g[1] = gx/n, gy/n
+        return g
 
     def update(self):
         self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
@@ -96,6 +110,35 @@ class Environment():
 
                 ax -= f_frott_x
                 ay -= f_frott_y
+
+                vect_acc = np.array([ax, ay])
+                if vect_norme_carre(vect_acc) > maxacc**2:
+                    agentA.acc = maxacc*normalize_vector(vect_acc)
+                else:
+                    agentA.acc = vect_acc
+
+            if type(agentA) == Verificateur:
+                dx = agentA.pos[0]-self.barycentre()[0]
+                dy = agentA.pos[1]-self.barycentre()[1]
+                f_ressort_x = -agentA.k * \
+                    (math.sqrt((dx)**2+(dy)**2) - agentA.l0) * \
+                    dx/(np.sqrt(dx**2+dy**2))
+                f_ressort_y = -agentA.k * \
+                    (math.sqrt((dx)**2+(dy)**2) - agentA.l0) * \
+                    dy/(np.sqrt(dx**2+dy**2))
+
+                f_frott_x = f*agentA.speed[0]
+                f_frott_y = f*agentA.speed[1]
+                for agentB in self.Agent_list:
+                    if type(agentB) == Verificateur and agentA.id != agentB.id:
+                        f_charge_x += q / \
+                            distance(agentA, agentB)**2 * \
+                            vect_AB(agentA, agentB)[0]
+                        f_charge_y += q / \
+                            distance(agentA, agentB)**2 * \
+                            vect_AB(agentA, agentB)[1]
+                ax = f_ressort_x-f_frott_x
+                ay = f_ressort_y-f_frott_y
 
                 vect_acc = np.array([ax, ay])
                 if vect_norme_carre(vect_acc) > maxacc**2:

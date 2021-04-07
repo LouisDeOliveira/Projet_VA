@@ -3,6 +3,8 @@ import math
 import uuid
 import random
 import numpy as np
+
+
 white = (255, 255, 255)
 red = (255, 0, 0)
 f = 2
