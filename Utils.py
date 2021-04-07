@@ -3,8 +3,6 @@ import math
 import uuid
 import random
 import numpy as np
-<<<<<<< HEAD
-=======
 
 
 white = (255, 255, 255)
@@ -23,7 +21,6 @@ purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
 res = 150
 k = 50000
->>>>>>> origin/vérificateur
 
 
 def distance(Agent1, Agent2):
