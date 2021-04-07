@@ -6,7 +6,7 @@ import numpy as np
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 1
+f = 2
 maxacc = 900.0
 maxspeed = 100.0
 circle_list = []
@@ -19,7 +19,7 @@ lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
 res = 150
-k = 100000
+k = 50000
 
 
 class Chercheur():
@@ -358,15 +358,15 @@ class Environment():
                             f_ressort_x = agentA.k * \
                                 (distance(agentA, agentB) - agentA.l0) * \
                                 vect_AB(agentA, agentB)[0]
-                            f_frott_x = f*agentA.speed[0]
+
                             f_ressort_y = agentA.k * \
                                 (distance(agentA, agentB) - agentA.l0) * \
                                 vect_AB(agentA, agentB)[1]
-                            f_frott_y = f*agentA.speed[1]
+                            ax += f_ressort_x
+                            ay += f_ressort_y
 
-                            ax += f_ressort_x - f_frott_x
-                            ay += f_ressort_y - f_frott_y
-                            # forces attractive du maillage
+                f_frott_x = f*agentA.speed[0]
+                f_frott_y = f*agentA.speed[1]
                 f_charge_x = 0
                 f_charge_y = 0
                 size = np.shape(self.mesh)
@@ -383,6 +383,9 @@ class Environment():
                 if self.active_nodes() > 0:
                     ax += f_charge_x*self.N0/self.active_nodes()
                     ay += f_charge_y*self.N0/self.active_nodes()
+
+                ax -= f_frott_x
+                ay -= f_frott_y
 
                 vect_acc = np.array([ax, ay])
                 if vect_norme_carre(vect_acc) > maxacc**2:
