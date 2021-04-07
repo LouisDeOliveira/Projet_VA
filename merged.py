@@ -1,3 +1,14 @@
+import pygame
+import math
+import uuid
+import random
+import numpy as np
+
+white = (255, 255, 255)
+red = (255, 0, 0)
+f = 2
+maxacc = 900.0
+maxspeed = 100.0
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
