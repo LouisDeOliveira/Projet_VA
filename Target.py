@@ -28,10 +28,10 @@ class Target():
 
     def __init__(self, x, y, speed, direction, size, id, env):
         self.id = id
-        self.speed = speed
-        self.acc = acc
+        self.speed = np.array([0., 0.])
+        self.acc = np.array([0., 0.])
         self.env = env
-        self.pos = x, y
+        self.pos = np.array([x, y])
         self.dir = direction
         self.size = size
         self.targeted = False
@@ -41,28 +41,14 @@ class Target():
         x, y = self.pos
         s = self.size
 
-        pygame.draw.line(env.screen, red,
-                         (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) - a),
-                          y - (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) - a)),
-                         (x + s * math.cos(-a), y + s * math.sin(-a)))
-
-        pygame.draw.line(env.screen, red,
-                         (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) + a),
-                          y + (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) + a)),
-                         (x + s * math.cos(a), y + s * math.sin(-a)))
-
-        pygame.draw.line(env.screen, red,
-                         (x - (s * math.sqrt(2) / 2) * math.cos(-a + math.pi / 4),
-                          y - (s * math.sqrt(2) / 2) * math.sin(-a + math.pi / 4)),
-                         (x - (s * math.sqrt(2) / 2) * math.cos(a + math.pi / 4),
-                          y + (s * math.sqrt(2) / 2) * math.sin(a + math.pi / 4)))
+        pygame.draw.circle(self.env.screen, red, (x,y), 10, 5)
 
     def wander(self):
         return self.x, self.y, self.dir
 
     def step(self):
         self.x, self.y, self.dir = self.wander()
-
+    """
     def wander(self, r=100):
         if self.destination == None:
             if self.target == None:
@@ -84,4 +70,4 @@ class Target():
 
         elif self.destination != None and self.target != None:
             if self.destination != self.target:
-                self .destination = self.target.x, self.target.y
+                self .destination = self.target.x, self.target.y"""

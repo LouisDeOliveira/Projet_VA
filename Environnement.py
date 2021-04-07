@@ -45,7 +45,7 @@ class Environment():
 
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
-            )*self.width, random.random()*self.height, 5, -90, 5, int(uuid.uuid1()), self))
+            )*self.width, random.random()*self.height, 0, -90, 5, int(uuid.uuid1()), self))
 
         for _ in range(n_verificateurs):
             self.Agent_list.append(Verificateur(random.random(
@@ -104,15 +104,16 @@ class Environment():
                     agentA.acc = vect_acc
 
         for agent in self.Agent_list:
-            vect_vit = np.array(
-                [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
-            if vect_norme_carre(vect_vit) > maxspeed**2:
-                agentA.speed = maxspeed*normalize_vector(vect_vit)
-            else:
-                agent.speed = vect_vit
+            if type(agent) != Target:
+                vect_vit = np.array(
+                    [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
+                if vect_norme_carre(vect_vit) > maxspeed**2:
+                    agentA.speed = maxspeed*normalize_vector(vect_vit)
+                else:
+                    agent.speed = vect_vit
 
-            agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
-            agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
+                agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
+                agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
 
             # conditions de bord :  a revoir pour rendre plus réaliste
             if agent.pos[0] < 0:

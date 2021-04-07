@@ -39,7 +39,6 @@ class Chercheur():
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
-        self.speed = speed
         self.env = env
         self.pos = np.array([x, y])
         self.speed = np.array([0., 0.])
