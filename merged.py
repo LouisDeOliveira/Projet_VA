@@ -8,7 +8,7 @@ white = (255, 255, 255)
 red = (255, 0, 0)
 f = 1
 maxacc = 900.0
-maxspeed = 100.0
+maxspeed = 10.0
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -19,7 +19,6 @@ lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
 res = 150
-k = 100000
 
 
 class Chercheur():
@@ -44,7 +43,7 @@ class Chercheur():
         self.pos = np.array([x, y])
         self.speed = np.array([0., 0.])
         self.acc = np.array([0., 0.])
-        self.k = 6
+        self.k = 12
         self.l0 = 150
         self.maxspeed = speed
         self.state = 'normal'
@@ -114,29 +113,26 @@ class Chercheur():
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def check_mesh(self):
-        try:
-            colonne = round(self.pos[0] / self.env.res)
-            ligne = round(self.pos[1] / self.env.res)
-            if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*ligne) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*(ligne+1)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne+1)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne), self.env.res*(ligne-1)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne-1)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-            if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
-        except:
-            pass
+        colonne = round(self.pos[0] / self.env.res)
+        ligne = round(self.pos[1] / self.env.res)
+        if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*ligne) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*(ligne+1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne+1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne), self.env.res*(ligne-1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne-1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
+        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
+            self.env.mesh[ligne][colonne] = 0
 
 
 class Verificateur():
@@ -341,12 +337,7 @@ class Environment():
             self.Agent_list.append(Verificateur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
 
-    def step(self):
-        for agent in self.Agent_list:
-            agent.step()
-
     def update(self):
-        self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
         for agentA in self.Agent_list:
             if type(agentA) == Chercheur:
                 ax = 0
@@ -354,7 +345,6 @@ class Environment():
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur:
                         if agentA.id != agentB.id and agentB in agentA.neighbours():
-                            # penser a desindenter le calcul de frottements
                             f_ressort_x = agentA.k * \
                                 (distance(agentA, agentB) - agentA.l0) * \
                                 vect_AB(agentA, agentB)[0]
@@ -366,23 +356,6 @@ class Environment():
 
                             ax += f_ressort_x - f_frott_x
                             ay += f_ressort_y - f_frott_y
-                            # forces attractive du maillage
-                f_charge_x = 0
-                f_charge_y = 0
-                size = np.shape(self.mesh)
-                for i in range(size[0]):
-                    for j in range(size[1]):
-                        if self.mesh[i][j] == 1:
-                            pos_charge = np.array([self.res*j, self.res*i])
-                            r = point_distance(
-                                agentA.pos[0], agentA.pos[1], pos_charge[0], pos_charge[1])
-                            vect = agentA.pos - pos_charge
-                            vect = vect/r
-                            f_charge_x += -k/(r**2)*vect[0]
-                            f_charge_y += -k/(r**2)*vect[1]
-                if self.active_nodes() > 0:
-                    ax += f_charge_x*self.N0/self.active_nodes()
-                    ay += f_charge_y*self.N0/self.active_nodes()
 
                 vect_acc = np.array([ax, ay])
                 if vect_norme_carre(vect_acc) > maxacc**2:
@@ -413,6 +386,17 @@ class Environment():
             if agent.pos[1] > self.height:
                 agent.pos[1] = self.height
                 agent.speed[1] = 0
+
+    def barycentre(self):
+        """ Donne le barycentre des drones chercheurs"""
+        g = np.zeros(2)
+        n = 0
+        for agent in self.Agent_list:
+            if type(agent) == Chercheur:
+                n += 1
+                g[0] += agent.pos[0]
+                g[1] += agent.pos[1]
+        return np.array(g[0]/n, g[1]/n)
 
     def draw_graph(self):
         """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins)"""
@@ -465,15 +449,6 @@ class Environment():
                     point = (j*self.res, i*self.res)
                     pygame.draw.circle(screen, red, point, 3)
 
-    def active_nodes(self):
-        N = 0
-        size = np.shape(self.mesh)
-        for i in range(size[0]):
-            for j in range(size[1]):
-                if self.mesh[i][j] == 1:
-                    N += 1
-        return N
-
 
 def distance(Agent1, Agent2):
     """ distance entre deux agents """
@@ -506,7 +481,7 @@ def normalize_vector(vect):
 
 
 if __name__ == '__main__':
-    env = Environment(5, 0, 0, 750, 750)
+    env = Environment(10, 2, 0, 750, 750)
     pygame.init()
     width, height = env.width, env.height
     screen = pygame.display.set_mode((width, height))
@@ -524,7 +499,7 @@ if __name__ == '__main__':
                 Running = False
 
         env.update()
-        # env.show_circles()
+        env.show_circles()
         for agent in env.Agent_list:
             if type(agent) == Chercheur:
                 agent.check_mesh()
