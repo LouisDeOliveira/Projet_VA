@@ -37,15 +37,16 @@ class Environment():
         self.width = width
         self.height = height
         self.Agent_list = []
-        self.res = 50
+        self.res = 50  # largeur du maillage, codé pour correspondre au champ de 'vision' des chercheurs
         self.screen = screen
+        self.time = 0
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
 
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
-            )*self.width, random.random()*self.height, 5, -90, 5, int(uuid.uuid1()), self))
+            )*self.width, random.random()*self.height, 0, -90, 5, int(uuid.uuid1()), self))
 
         for _ in range(n_verificateurs):
             self.Agent_list.append(Verificateur(random.random(
@@ -127,6 +128,8 @@ class Environment():
             if agent.pos[1] > self.height:
                 agent.pos[1] = self.height
                 agent.speed[1] = 0
+        # mise a jour de l'horloge:
+        self.time += dt
 
     def draw_graph(self):
         """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins)"""
@@ -189,7 +192,14 @@ class Environment():
         return N
 
     def score(self):
+        #
         score_couverture = 0
         score_cibles = 0
-        score_temps = 0
+        score_temps = self.time
         score_batterie = 0
+        size = np.shape(self.mesh)
+        for i in range(size[0]):
+            for j in range(size[1]):
+                if self.mesh[i][j] == 0:
+                    score_couverture += 1
+        score_couverture /= size**2
