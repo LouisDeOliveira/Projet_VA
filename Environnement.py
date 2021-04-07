@@ -45,7 +45,7 @@ class Environment():
 
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
-            )*self.width, random.random()*self.height, 0, -90, 5, int(uuid.uuid1()), self))
+            )*self.width, random.random()*self.height, int(uuid.uuid1()), self))
 
         for _ in range(n_verificateurs):
             self.Agent_list.append(Verificateur(random.random(
