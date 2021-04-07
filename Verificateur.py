@@ -59,25 +59,7 @@ class Verificateur():
         self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
                                                                                                       'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
 
-    def target_agent(self):
-        """ Attribue en tant que cible la cible la plus proche du champ de vision du drone si celui-ci n'en a pas déjà une """
-
-        if self.target == None:
-            min_distance = math.inf
-            best_agent = None
-            for agent in self.neighbours():
-                if type(agent) == Target:
-                    if distance(self, agent) < min_distance and agent.targeted == False:
-                        min_distance = distance(self, agent)
-                        best_agent = agent
-            if best_agent != None:
-                best_agent.targeted = True
-            return best_agent
-        else:
-            return self.target
-
     def move(self):
-
         try:
 
             d = point_distance(

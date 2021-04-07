@@ -88,6 +88,25 @@ class Environment():
                                 vect_AB(agentA, agentB)[1]
                             ax += f_ressort_x
                             ay += f_ressort_y
+                    
+                    if type(agentB) == Target:
+                        if agentB in agentA.neighbours():
+                            
+                            dist = []
+                            for agentC in self.Agent_list:
+                                if type(agentC) == Verificateur and agentC.target == None:
+                                    dist.append((agentC,distance(agentC,agentB)))
+                            
+                            agent_choisi = None
+                            dist_choisi = np.inf 
+                            for e in dist:
+                                if e[1] < dist_choisi:
+                                    agent_choisi = e[0]
+                                    dist_choisi = e[1]
+                            
+                            agent_choisi.target = agentB
+
+
 
                 f_frott_x = f*agentA.speed[0]
                 f_frott_y = f*agentA.speed[1]
