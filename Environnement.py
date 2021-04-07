@@ -193,3 +193,19 @@ class Environment():
         score_cibles = 0
         score_temps = 0
         score_batterie = 0
+    
+    def batterie(agent):
+        t=0
+        puissance_acc= 0 # puissance consommée pendant l'accélération
+        puissance_cste= 0 # puissance consommée à vitesse constante
+        energ_init= 0 # energie initiale en kWh
+        energ=energ_init
+        while agent.acc>0:
+            t+=dt
+            energ=energ-puissance_acc*dt
+            t=0
+        while agent.acc=0:
+            t+=dt
+            energ=energ-puissance_cste*dt
+            t=0
+        return energ
