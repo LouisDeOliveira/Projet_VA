@@ -64,7 +64,8 @@ class Chercheur():
         self.destination = None
         self.inbox = []
         self.Environment = Environment
-        self.neighbours_pos = {} np.array([drone.pos for drone in neighbours])
+        self.Agent_list = self.Environment.Agent_list
+        self.Agent_list_pos = {} np.array([drone.pos for drone in neighbours])
 
     def neighbours(self, r=200):
          liste des agents(Chercheur ou Target) à distance <= r du Chercheur
@@ -93,11 +94,11 @@ class Chercheur():
                 message.genre = pos
                 drone.inbox.append(message)
 
-    def message_pos(self):
+    def read_message(self):
         while len(self.inbox) >= 1:
             message = self.inbox.pop()
             if message.genre == pos:
-                neighbours[message.sender] = [message.x,message.y]
+                Agent_list_pos[message.sender] = [message.x,message.y]
             if message.genre == alerte:
                 self.target.append(message.target)
 
