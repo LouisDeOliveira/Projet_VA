@@ -354,7 +354,7 @@ class Environment():
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur:
                         if agentA.id != agentB.id and agentB in agentA.neighbours():
-                            # penser a desindenter le calcul de frottements
+
                             f_ressort_x = agentA.k * \
                                 (distance(agentA, agentB) - agentA.l0) * \
                                 vect_AB(agentA, agentB)[0]
@@ -404,6 +404,7 @@ class Environment():
             agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
             agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
 
+            # conditions de bord :  a revoir pour rendre plus réaliste
             if agent.pos[0] < 0:
                 agent.pos[0] = 0
                 agent.speed[0] = 0
@@ -476,6 +477,12 @@ class Environment():
                 if self.mesh[i][j] == 1:
                     N += 1
         return N
+
+    def score(self):
+        score_couverture = 0
+        score_cibles = 0
+        score_temps = 0
+        score_batterie = 0
 
 
 def distance(Agent1, Agent2):
