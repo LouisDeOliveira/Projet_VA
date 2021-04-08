@@ -88,25 +88,23 @@ class Environment():
                                 vect_AB(agentA, agentB)[1]
                             ax += f_ressort_x
                             ay += f_ressort_y
-                    
+
+                        #il faudra implémenter le graphe connexe ici
+                        dico = agentA.dico_cible.update(agentB.dico_cible)  
+                        try:
+                            for id in dico:
+                                try :
+                                    if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
+                                        dico[id][1] = True
+                                except :
+                                    pass
+                        except:
+                            pass
+
                     if type(agentB) == Target:
                         if agentB in agentA.neighbours():
-                            
-                            dist = []
-                            for agentC in self.Agent_list:
-                                if type(agentC) == Verificateur and agentC.target == None:
-                                    dist.append((agentC,distance(agentC,agentB)))
-                            
-                            agent_choisi = None
-                            dist_choisi = np.inf 
-                            for e in dist:
-                                if e[1] < dist_choisi:
-                                    agent_choisi = e[0]
-                                    dist_choisi = e[1]
-                            
-                            agent_choisi.target = agentB
-
-
+                            if agentB.id not in agentA.dico_cible:
+                                agentA.dico_cible[agentB.id] = [agentB.pos,agentB.state]
 
                 f_frott_x = f*agentA.speed[0]
                 f_frott_y = f*agentA.speed[1]
@@ -136,7 +134,43 @@ class Environment():
                 else:
                     agentA.acc = vect_acc
 
-            if type(agentA) == Verificateur:
+
+            if type(agentA) == Verificateur :
+                for agentB in self.Agent_list:
+                    if type(agentB) == Chercheur or type(agentB) == Verificateur:
+                        dico = agentA.dico_cible.update(agentB.dico_cible)  
+                        try:
+                            for id in dico:
+                                try :
+                                    if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
+                                        dico[id][1] = True
+                                except :
+                                    pass
+                        except:
+                            pass
+                
+                if type(agentA.target) != 'NoneType':
+                    #aller vers la cible tout en évitant les drones
+                    print('oyea')
+                    pass
+
+                else:
+                    dist = []
+                    for id in agentA.dico_cible:
+                        if not agentA.dico_cible[id][1]:
+                            agentA.target = agentA.dico_cible[id][0]
+                    """
+                    agent_choisi = None
+                    dist_choisi = np.inf 
+                    for e in dist:
+                        if e[1] < dist_choisi:
+                            agent_choisi = e[0]
+                            dist_choisi = e[1]
+                    
+                    agent_choisi.target = agentB
+                    """
+
+
                 dx = agentA.pos[0]-self.barycentre()[0]
                 dy = agentA.pos[1]-self.barycentre()[1]
                 f_ressort_x = -agentA.k * \

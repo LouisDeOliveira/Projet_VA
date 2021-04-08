@@ -33,6 +33,7 @@ class Target():
         self.env = env
         self.pos = np.array([x, y])
         self.targeted = False
+        self.state = False  #False si non trouvé ou seulement vu ; True si vérifié
 
     def display(self):
         x, y = self.pos

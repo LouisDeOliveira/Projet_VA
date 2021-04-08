@@ -31,7 +31,7 @@ k = 50000
 pygame.init()
 width, height = 750, 750
 screen = pygame.display.set_mode((width, height))
-env = Environment(5, 2, 1, width, height, screen)
+env = Environment(5, 2, 10, width, height, screen)
 Running = True
 tick_freq = 100
 dt = 1/tick_freq
