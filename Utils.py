@@ -24,7 +24,10 @@ def vect_AB(agentA, agentB):
     v_x = agentB.pos[0]-agentA.pos[0]
     v_y = agentB.pos[1]-agentA.pos[1]
 
-    return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
+    if (v_x**2+v_x**2) == 0:
+        return np.array([0, 0])
+    else:
+        return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
 
 
 def vect_norme_carre(vect):

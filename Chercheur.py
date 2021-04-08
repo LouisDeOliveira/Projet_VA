@@ -38,12 +38,12 @@ class Chercheur():
 
     """
 
-    def __init__(self, x, y, direction, size, id, env):
+    def __init__(self, x, y, speed, direction, size, id, env):
         self.env = env
         self.pos = np.array([x, y])
         self.speed = np.array([0., 0.])
         self.acc = np.array([0., 0.])
-        self.k = 6
+        self.k = 20
         self.l0 = 150
         self.maxspeed = speed
         self.state = 'normal'
@@ -52,6 +52,37 @@ class Chercheur():
         self.size = size
         self.target = None
         self.id = id
+        self.cdv = 50
+        self.destination = None
+        self.inbox = []
+        self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
+                                                                                                      'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
+
+    def make_message(self, recipient):
+        self.message['sender_id'] = self.id
+        self.message['recipient_id'] = recipient.id
+        self.message['time'] = t
+        self.message['message']['status']['x'] = self.x
+        self.message['message']['status']['y'] = self.y
+        self.message['message']['status']['z'] = self.z
+        self.message['message']['status']['dir'] = self.dir
+        self.message['message']['status']['speed'] = self.speed
+        self.message['message']['status']['state'] = self.state
+        self.message['message']['status']['battery'] = self.battery
+
+        if self.target != None:
+            self.message['message']['alert']['t_x'] = self.target.x
+            self.message['message']['alert']['t_y'] = self.target.y
+            self.message['message']['alert']['t_z'] = self.target.z
+
+    def read_message(self):
+        pass
+
+    def send_message(self):
+        pass
+
+    def score(self):
+        pass
 
     def display(self):
         """ Dessine le drone sur l'écran """
@@ -83,10 +114,21 @@ class Chercheur():
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def check_mesh(self):
+        """ Vérifie si des points du maillage sont visibles par le chercheur et les désactive si c'est le cas, on suppose pour le moment que la résolution
+        du maillage coincide avec le champ de vision des chercheurs.
+        On utiise un try/except pour éviter des bugs de nature inconnue qui causent des crashes
+        """
         try:
             colonne = round(self.pos[0] / self.env.res)
             ligne = round(self.pos[1] / self.env.res)
-            if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    try:
+                        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+i), self.env.res*(ligne+j)) < self.cdv:
+                            self.env.mesh[ligne+j][colonne+i] = 0
+                    except:
+                        pass
+            """if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*ligne) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
@@ -103,6 +145,6 @@ class Chercheur():
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
-                self.env.mesh[ligne][colonne] = 0
+                self.env.mesh[ligne][colonne] = 0"""
         except:
             pass
