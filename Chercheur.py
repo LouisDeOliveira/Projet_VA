@@ -57,6 +57,7 @@ class Chercheur():
         self.inbox = []
         self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
                                                                                                       'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
+        self.dico_cible = {}  # {id:{pos, state}}
 
     def make_message(self, recipient):
         self.message['sender_id'] = self.id
@@ -145,11 +146,6 @@ class Chercheur():
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
-<<<<<<< HEAD
-                self.env.mesh[ligne][colonne] = 0
-            print("ok")
-=======
                 self.env.mesh[ligne][colonne] = 0"""
->>>>>>> 7eb77ce55cd1d801d66f237a56d0c7156f58b72b
         except:
             pass
