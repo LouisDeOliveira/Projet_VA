@@ -13,8 +13,8 @@ from Utils import *
 white = (255, 255, 255)
 red = (255, 0, 0)
 f = 2
-maxacc = 900.0
-maxspeed = 100.0
+maxacc = 20.0
+maxspeed = 20.0
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -31,7 +31,7 @@ k = 50000
 pygame.init()
 width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
-env = Environment(5, 2, 10, width, height, screen)
+env = Environment(5, 0, 0, width, height, screen)
 Running = True
 tick_freq = 100
 dt = 1/tick_freq
