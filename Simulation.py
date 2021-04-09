@@ -9,13 +9,8 @@ from Verificateur import Verificateur
 from Chercheur import Chercheur
 from Utils import *
 
-
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 2
-maxacc = 900.0
-maxspeed = 100.0
-circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
 green = (0, 200, 0)
@@ -24,8 +19,6 @@ lightblue = (0, 0, 255)
 lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
-res = 150
-k = 50000
 
 
 pygame.init()
@@ -33,8 +26,8 @@ width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
 env = Environment(5, 2, 10, width, height, screen)
 Running = True
-tick_freq = 100
-dt = 1/tick_freq
+tick_freq = env.tick_freq
+dt = env.dt
 t = 0
 # Screen Update Speed (FPS)
 clock = pygame.time.Clock()

@@ -7,10 +7,6 @@ from Utils import *
 
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 2
-maxacc = 900.0
-maxspeed = 100.0
-circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
 green = (0, 200, 0)
@@ -19,8 +15,6 @@ lightblue = (0, 0, 255)
 lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
-res = 150
-k = 50000
 
 
 class Verificateur():
@@ -39,15 +33,14 @@ class Verificateur():
 
     """
 
-    def __init__(self, x, y, speed, direction, size, id, env):
-        self.speed = speed
+    def __init__(self, x, y, direction, size, id, env):
         self.env = env
         self.pos = np.array([x, y])
         self.speed = np.array([0., 0.])
         self.acc = np.array([0., 0.])
-        self.k = 10
-        self.l0 = 200
-        self.maxspeed = maxspeed
+        self.k = env.k_ressort
+        self.l0 = env.l0_ressort
+        self.maxspeed = env.maxspeed
         self.state = 'normal'
         self.battery = None
         self.dir = direction

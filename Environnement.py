@@ -7,11 +7,9 @@ from Target import Target
 from Verificateur import Verificateur
 from Chercheur import Chercheur
 from Utils import *
+
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 2
-maxacc = 900.0
-maxspeed = 100.0
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -21,12 +19,10 @@ lightblue = (0, 0, 255)
 lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
-res = 150
-k = 50000  # constante du ressort entre les Chercheurs
+
+
 tick_freq = 100
 dt = 1/tick_freq
-q = 100000  # force d'attraction Chercheurs vers points du maillage
-F = 1000000  # force d'attraction Vérificateur vers Target
 
 
 class Environment():
@@ -38,13 +34,28 @@ class Environment():
     def __init__(self, n_chercheurs, n_verificateurs, n_targets, width, height, screen):
         self.width = width
         self.height = height
+        
         self.Agent_list = []
         self.res = 20
         self.screen = screen
+        
         self.time = 0
+        self.tick_freq = 100
+        self.dt = 1/tick_freq
+
+        self.k_ressort = 6
+        self.l0_ressort = 200
+        self.maxacc = 900.0
+        self.maxspeed = 100.0
+
+        self.q = 50000
+        self.F = 1000000
+        self.f = 2
+        self.k = 50000
+
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(
-            )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
+            )*self.width/2, random.random()*self.height/2, -90, 5, int(uuid.uuid1()), self))
 
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
@@ -52,7 +63,7 @@ class Environment():
 
         for _ in range(n_verificateurs):
             self.Agent_list.append(Verificateur(random.random(
-            )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
+            )*self.width/2, random.random()*self.height/2, -90, 5, int(uuid.uuid1()), self))
 
     def step(self):
         for agent in self.Agent_list:
@@ -119,8 +130,8 @@ class Environment():
                                     agentB.pos, agentB.state, agentB.id]
                     # print(agentA.dico_cible)
 
-                f_frott_x = f*agentA.speed[0]
-                f_frott_y = f*agentA.speed[1]
+                f_frott_x = self.f*agentA.speed[0]
+                f_frott_y = self.f*agentA.speed[1]
                 f_charge_x = 0
                 f_charge_y = 0
                 size = np.shape(self.mesh)
@@ -132,8 +143,8 @@ class Environment():
                                 agentA.pos[0], agentA.pos[1], pos_charge[0], pos_charge[1])
                             vect = agentA.pos - pos_charge
                             vect = vect/r
-                            f_charge_x += -k/(r**2)*vect[0]
-                            f_charge_y += -k/(r**2)*vect[1]
+                            f_charge_x += -self.k/(r**2)*vect[0]
+                            f_charge_y += -self.k/(r**2)*vect[1]
                 if self.active_nodes() > 0:
                     ax += f_charge_x*self.N0/self.active_nodes()
                     ay += f_charge_y*self.N0/self.active_nodes()
@@ -142,8 +153,8 @@ class Environment():
                 ay -= f_frott_y
 
                 vect_acc = np.array([ax, ay])
-                if vect_norme_carre(vect_acc) > maxacc**2:
-                    agentA.acc = maxacc*normalize_vector(vect_acc)
+                if vect_norme_carre(vect_acc) > self.maxacc**2:
+                    agentA.acc = self.maxacc*normalize_vector(vect_acc)
                 else:
                     agentA.acc = vect_acc
 
@@ -198,19 +209,19 @@ class Environment():
                     (math.sqrt((dx)**2+(dy)**2) - agentA.l0) * \
                     dy/(np.sqrt(dx**2+dy**2))
 
-                f_frott_x = f*agentA.speed[0]
-                f_frott_y = f*agentA.speed[1]
+                f_frott_x = self.f*agentA.speed[0]
+                f_frott_y = self.f*agentA.speed[1]
 
                 for agentB in self.Agent_list:
                     if type(agentB) == Verificateur and agentA.id != agentB.id:
-                        f_charge_x += q / \
+                        f_charge_x += self.q / \
                             distance(agentA, agentB)**2 * \
                             vect_AB(agentA, agentB)[0]
-                        f_charge_y += q / \
+                        f_charge_y += self.q / \
                             distance(agentA, agentB)**2 * \
                             vect_AB(agentA, agentB)[1]
 
-                if type(agentA.target) != 'NoneType':
+                if agentA.target != None:
                     print(agentA.target)
 
                     agentTarget = None
@@ -219,8 +230,8 @@ class Environment():
                             agentTarget = agentB
 
                     # try :
-                    f_target_x = F*vect_AB(agentA, agentTarget)[0]
-                    f_target_y = F*vect_AB(agentA, agentTarget)[1]
+                    f_target_x = self.F*vect_AB(agentA, agentTarget)[0]
+                    f_target_y = self.F*vect_AB(agentA, agentTarget)[1]
                     """except : 
                         print("oups, problème d'id!")"""
 
@@ -232,8 +243,8 @@ class Environment():
                 ay = f_ressort_y - f_frott_y + f_charge_y + f_target_y
 
                 vect_acc = np.array([ax, ay])
-                if vect_norme_carre(vect_acc) > maxacc**2:
-                    agentA.acc = maxacc*normalize_vector(vect_acc)
+                if vect_norme_carre(vect_acc) > self.maxacc**2:
+                    agentA.acc = self.maxacc*normalize_vector(vect_acc)
                 else:
                     agentA.acc = vect_acc
 
@@ -241,8 +252,8 @@ class Environment():
             if type(agent) != Target:
                 vect_vit = np.array(
                     [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
-                if vect_norme_carre(vect_vit) > maxspeed**2:
-                    agentA.speed = maxspeed*normalize_vector(vect_vit)
+                if vect_norme_carre(vect_vit) > self.maxspeed**2:
+                    agentA.speed = self.maxspeed*normalize_vector(vect_vit)
                 else:
                     agent.speed = vect_vit
 
