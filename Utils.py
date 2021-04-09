@@ -6,6 +6,24 @@ import numpy as np
 np.seterr(divide='ignore', invalid='ignore')
 
 
+white = (255, 255, 255)
+red = (255, 0, 0)
+f = 2
+maxacc = 900.0
+maxspeed = 100.0
+circle_list = []
+shadow = (80, 80, 80)
+lightgreen = (0, 255, 0)
+green = (0, 200, 0)
+blue = (0, 0, 128)
+lightblue = (0, 0, 255)
+lightred = (255, 100, 100)
+purple = (102, 0, 102)
+lightpurple = (153, 0, 153)
+res = 150
+k = 50000
+
+
 def distance(Agent1, Agent2):
     """ distance entre deux agents """
     x1, y1 = Agent1.pos
