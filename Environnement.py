@@ -21,16 +21,13 @@ lightblue = (0, 0, 255)
 lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
-<<<<<<< HEAD
-k = 50000
-=======
 res = 150
-k = 50000       #constante du ressort entre les Chercheurs
->>>>>>> origin/TargetVerif
+k = 50000  # constante du ressort entre les Chercheurs
 tick_freq = 100
 dt = 1/tick_freq
-q = 100000      #force d'attraction Chercheurs vers points du maillage
-F = 1000000      #force d'attraction Vérificateur vers Target
+q = 100000  # force d'attraction Chercheurs vers points du maillage
+F = 1000000  # force d'attraction Vérificateur vers Target
+
 
 class Environment():
     """
@@ -44,6 +41,7 @@ class Environment():
         self.Agent_list = []
         self.res = 20
         self.screen = screen
+        self.time = 0
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
@@ -83,6 +81,8 @@ class Environment():
 
 
         """
+        self.time += dt
+        print(self.time)
         self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
         for agentA in self.Agent_list:
             if type(agentA) == Chercheur:
@@ -102,22 +102,22 @@ class Environment():
                             ax += f_ressort_x
                             ay += f_ressort_y
 
-                        #il faudra implémenter le graphe connexe ici
-                        agentA.dico_cible.update(agentB.dico_cible)  
-                        
+                        # il faudra implémenter le graphe connexe ici
+                        agentA.dico_cible.update(agentB.dico_cible)
+
                         for id in agentA.dico_cible:
-                            try :
+                            try:
                                 if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
                                     dico[id][1] = True
-                            except :
+                            except:
                                 pass
-                        
 
-                    if type(agentB) == Target:              #fonctionne, modif champ de vision
+                    if type(agentB) == Target:  # fonctionne, modif champ de vision
                         if agentB in agentA.neighbours():
                             if agentB.id not in agentA.dico_cible:
-                                agentA.dico_cible[agentB.id] = [agentB.pos,agentB.state,agentB.id]
-                    #print(agentA.dico_cible)
+                                agentA.dico_cible[agentB.id] = [
+                                    agentB.pos, agentB.state, agentB.id]
+                    # print(agentA.dico_cible)
 
                 f_frott_x = f*agentA.speed[0]
                 f_frott_y = f*agentA.speed[1]
@@ -147,26 +147,26 @@ class Environment():
                 else:
                     agentA.acc = vect_acc
 
-
-            if type(agentA) == Verificateur :           #Fonctionne mal : les deux vérif vont voir la même Target, qui n'est pas la plus proche
+            # Fonctionne mal : les deux vérif vont voir la même Target, qui n'est pas la plus proche
+            if type(agentA) == Verificateur:
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur or type(agentB) == Verificateur:
-                        agentA.dico_cible.update(agentB.dico_cible)  
-                        
+                        agentA.dico_cible.update(agentB.dico_cible)
+
                         for id in agentA.dico_cible:
                             try:
                                 if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
                                     dico[id][1] = True
-                                
-                                #print(agentA.dico_cible)
-                            except :
+
+                                # print(agentA.dico_cible)
+                            except:
                                 continue
                         """except:
                             pass"""
-                
+
                 if type(agentA.target) == 'NoneType':
-                    #routine = si on est au niveau de la cible, attendre 5 secondes (par exemple)
-                    #print('oyea')
+                    # routine = si on est au niveau de la cible, attendre 5 secondes (par exemple)
+                    # print('oyea')
                     pass
 
                 else:
@@ -177,8 +177,7 @@ class Environment():
                     for id in agentA.dico_cible:
                         if not agentA.dico_cible[id][1]:
                             liste_cibles_libres.append(agentA.dico_cible[id])
-                    
-                    
+
                     for e in liste_cibles_libres:
                         print(e)
                         if e[1] < dist_choisi:
@@ -186,9 +185,8 @@ class Environment():
                             dist_choisi = e[1]
                             id_choisi = e[2]
 
-                
                     agentA.target = [agent_choisi, id_choisi]
-                    #except : pass
+                    # except : pass
 
                 dx = agentA.pos[0]-self.barycentre()[0]
                 dy = agentA.pos[1]-self.barycentre()[1]
@@ -212,21 +210,21 @@ class Environment():
                             distance(agentA, agentB)**2 * \
                             vect_AB(agentA, agentB)[1]
 
-                if type(agentA.target) != 'NoneType' :
+                if type(agentA.target) != 'NoneType':
                     print(agentA.target)
-                    
+
                     agentTarget = None
                     for agentB in self.Agent_list:
                         if agentB.id == agentA.target[1]:
                             agentTarget = agentB
-                    
-                    #try :
+
+                    # try :
                     f_target_x = F*vect_AB(agentA, agentTarget)[0]
                     f_target_y = F*vect_AB(agentA, agentTarget)[1]
                     """except : 
                         print("oups, problème d'id!")"""
-                    
-                else : 
+
+                else:
                     f_target_x = 0
                     f_target_y = 0
 
