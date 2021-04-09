@@ -3,22 +3,7 @@ import math
 import uuid
 import random
 import numpy as np
-white = (255, 255, 255)
-red = (255, 0, 0)
-f = 2
-maxacc = 900.0
-maxspeed = 100.0
-circle_list = []
-shadow = (80, 80, 80)
-lightgreen = (0, 255, 0)
-green = (0, 200, 0)
-blue = (0, 0, 128)
-lightblue = (0, 0, 255)
-lightred = (255, 100, 100)
-purple = (102, 0, 102)
-lightpurple = (153, 0, 153)
-res = 150
-k = 50000
+np.seterr(divide='ignore', invalid='ignore')
 
 
 def distance(Agent1, Agent2):
@@ -40,6 +25,10 @@ def vect_AB(agentA, agentB):
     v_x = agentB.pos[0]-agentA.pos[0]
     v_y = agentB.pos[1]-agentA.pos[1]
 
+    """if (v_x**2+v_x**2) == 0:
+        return np.array([0, 0])
+    else:
+        return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)"""
     return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
 
 

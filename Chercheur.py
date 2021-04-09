@@ -39,12 +39,11 @@ class Chercheur():
     """
 
     def __init__(self, x, y, speed, direction, size, id, env):
-        self.speed = speed
         self.env = env
         self.pos = np.array([x, y])
         self.speed = np.array([0., 0.])
         self.acc = np.array([0., 0.])
-        self.k = 6
+        self.k = 20
         self.l0 = 150
         self.maxspeed = speed
         self.state = 'normal'
@@ -53,6 +52,7 @@ class Chercheur():
         self.size = size
         self.target = None
         self.id = id
+        self.cdv = 50
         self.destination = None
         self.inbox = []
         self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
@@ -114,10 +114,21 @@ class Chercheur():
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
 
     def check_mesh(self):
+        """ Vérifie si des points du maillage sont visibles par le chercheur et les désactive si c'est le cas, on suppose pour le moment que la résolution
+        du maillage coincide avec le champ de vision des chercheurs.
+        On utiise un try/except pour éviter des bugs de nature inconnue qui causent des crashes
+        """
         try:
             colonne = round(self.pos[0] / self.env.res)
             ligne = round(self.pos[1] / self.env.res)
-            if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
+            for i in range(-2, 3):
+                for j in range(-2, 3):
+                    try:
+                        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+i), self.env.res*(ligne+j)) < self.cdv:
+                            self.env.mesh[ligne+j][colonne+i] = 0
+                    except:
+                        pass
+            """if point_distance(self.pos[0], self.pos[1], self.env.res*colonne, self.env.res*ligne) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*ligne) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
@@ -134,7 +145,11 @@ class Chercheur():
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
+<<<<<<< HEAD
                 self.env.mesh[ligne][colonne] = 0
             print("ok")
+=======
+                self.env.mesh[ligne][colonne] = 0"""
+>>>>>>> 7eb77ce55cd1d801d66f237a56d0c7156f58b72b
         except:
             pass
