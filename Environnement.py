@@ -205,7 +205,7 @@ class Environment():
                             distance(agentA, agentB)**2 * \
                             vect_AB(agentA, agentB)[1]
 
-                if type(agentA.target) != 'NoneType':
+                if agentA.target != None:
                     print(agentA.target)
 
                     agentTarget = None

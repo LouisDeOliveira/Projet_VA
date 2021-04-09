@@ -4,6 +4,7 @@ import uuid
 import random
 import numpy as np
 from Utils import *
+
 white = (255, 255, 255)
 red = (255, 0, 0)
 f = 2
@@ -33,8 +34,11 @@ class Target():
         self.env = env
         self.pos = np.array([x, y])
         self.targeted = False
-        self.state = False  #False si non trouvé ou seulement vu ; True si vérifié
+        self.checked = False
+        self.state = False  # False si non trouvé ou seulement vu ; True si vérifié
 
     def display(self):
         x, y = self.pos
-        pygame.draw.circle(self.env.screen, red, (x,y), 8, 5)
+        pygame.draw.circle(self.env.screen, red, (x, y), 8, 5)
+        if self.checked:
+            pygame.draw.circle(self.env.screen, green, (x, y), 8, 5)
