@@ -107,17 +107,17 @@ class Verificateur():
         y = self.pos[1]
         s = self.size
 
-        pygame.draw.line(env.screen, lightgreen,
+        pygame.draw.line(self.env.screen, lightgreen,
                          (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) - a),
                           y - (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) - a)),
                          (x + s * math.cos(-a), y + s * math.sin(-a)))
 
-        pygame.draw.line(env.screen, lightgreen,
+        pygame.draw.line(self.env.screen, lightgreen,
                          (x - (s * math.sqrt(130) / 12) * math.cos(math.atan(7 / 9) + a),
                           y + (s * math.sqrt(130) / 12) * math.sin(math.atan(7 / 9) + a)),
                          (x + s * math.cos(a), y + s * math.sin(-a)))
 
-        pygame.draw.line(env.screen, lightgreen,
+        pygame.draw.line(self.env.screen, lightgreen,
                          (x - (s * math.sqrt(2) / 2) * math.cos(-a + math.pi / 4),
                           y - (s * math.sqrt(2) / 2) * math.sin(-a + math.pi / 4)),
                          (x - (s * math.sqrt(2) / 2) * math.cos(a + math.pi / 4),
