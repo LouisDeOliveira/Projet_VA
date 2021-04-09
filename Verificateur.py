@@ -52,14 +52,23 @@ class Verificateur():
         self.battery = None
         self.dir = direction
         self.size = size
-        self.target = None  #[coordonnées de destination, id du Target associé]
+        # [coordonnées de destination, id du Target associé]
+        self.target = None
         self.id = id
         self.destination = None
         self.inbox = []
         self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
                                                                                                       'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
-        self.dico_cible = {}        #{id:{pos, state, id}}
+        self.dico_cible = {}  # {id:{pos, state, id}}
 
+    def check_target():
+        checked = False
+        while self.time != 0 and self.env.time-self.time <= 5:
+            checked = True
+        if checked:
+            self.dico_cible[self.target[1]] = True
+            self.target = None
+            checked = False
 
     def move(self):
         try:
@@ -112,4 +121,3 @@ class Verificateur():
         """ liste des agents(Chercheur ou Target) à distance <= r du Chercheur """
 
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
-        
