@@ -125,6 +125,6 @@ class Verificateur():
                           y + (s * math.sqrt(2) / 2) * math.sin(a + math.pi / 4)))
 
     def neighbours(self, r=200):
-        """ liste des agents (Chercheur ou Target) à distance <= r du Chercheur """
+        """ liste des agents(Chercheur ou Target) à distance <= r du Chercheur """
 
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
