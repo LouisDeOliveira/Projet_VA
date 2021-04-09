@@ -21,7 +21,6 @@ lightblue = (0, 0, 255)
 lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
-res = 150
 k = 50000
 tick_freq = 100
 dt = 1/tick_freq
@@ -38,7 +37,7 @@ class Environment():
         self.width = width
         self.height = height
         self.Agent_list = []
-        self.res = 50
+        self.res = 20
         self.screen = screen
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(
@@ -70,6 +69,15 @@ class Environment():
         return g
 
     def update(self):
+        """
+        Principale fonction qui détermine l'évolution de la dynamique des drones.
+        - la première boucle s'occupe d'appliquer les forces au drone selon son type en s'assurant de ne pas dépasser le cap d'acceleration
+        - ensuite on applique cette accéleration pour trouver la vitesse sans dépasser le cap
+        - ensuie on applique cette vitesse pour trouver la position
+        - on impose une condition de bord pour ne pas sortir du cadre.
+
+
+        """
         self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
         for agentA in self.Agent_list:
             if type(agentA) == Chercheur:
@@ -172,7 +180,7 @@ class Environment():
                 agent.speed[1] = 0
 
     def draw_graph(self):
-        """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins)"""
+        """ Dessine le graphe reliant les Drones à portée de communication(càd qui sont voisins(fonction neighbours par défaut))"""
         edge_list_c = []
         edge_list_v = []
         for agent in self.Agent_list:
@@ -202,11 +210,14 @@ class Environment():
                              (edge[0][0], edge[0][1]), (edge[1][0], edge[1][1]))
 
     def show_circles(self):
+        """ permet d'afficher le champ de vision des drones """
+        r = 0
         for agent in self.Agent_list:
             if type(agent) == Chercheur:
+                r = agent.cdv
                 circle_list.append((agent.pos[0], agent.pos[1]))
         for circle in circle_list:
-            pygame.draw.circle(self.screen, shadow, circle, self.res/2)
+            pygame.draw.circle(self.screen, shadow, circle, r)
 
     def mesh_matrix(self):
         m_width = int(np.floor(self.width/self.res))+1
@@ -220,7 +231,7 @@ class Environment():
             for j in range(size[1]):
                 if self.mesh[i][j] == 1:
                     point = (j*self.res, i*self.res)
-                    pygame.draw.circle(self.screen, red, point, 3)
+                    pygame.draw.circle(self.screen, red, point, 2)
 
     def active_nodes(self):
         N = 0
