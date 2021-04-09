@@ -164,7 +164,7 @@ class Environment():
                         """except:
                             pass"""
 
-                if type(agentA.target) == 'NoneType':
+                if agentA.target != None:
                     # routine = si on est au niveau de la cible, attendre 5 secondes (par exemple)
                     # print('oyea')
                     pass
@@ -210,7 +210,7 @@ class Environment():
                             distance(agentA, agentB)**2 * \
                             vect_AB(agentA, agentB)[1]
 
-                if type(agentA.target) != 'NoneType':
+                if agentA.target != None:
                     print(agentA.target)
 
                     agentTarget = None
