@@ -156,15 +156,16 @@ class Environment():
                     if type(agentB) == Chercheur or type(agentB) == Verificateur:
                         agentA.dico_cible = fusion_dico(
                             agentA.dico_cible, agentB.dico_cible)
-                        ''' for id in agentA.dico_cible:
-                            try:
-                                if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
-                                    dico[id][1] = True
+                print(agentA.dico_cible)
+                ''' for id in agentA.dico_cible:
+                        try:
+                            if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
+                                dico[id][1] = True
 
-                                # print(agentA.dico_cible)
-                            except:
-                                continue '''
-                        """except:
+                            # print(agentA.dico_cible)
+                        except:
+                            continue '''
+                """except:
                             pass"""
 
                 if agentA.target == None:
