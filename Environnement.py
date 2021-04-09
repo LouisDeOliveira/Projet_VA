@@ -26,7 +26,7 @@ k = 50000  # constante du ressort entre les Chercheurs
 tick_freq = 100
 dt = 1/tick_freq
 q = 100000  # force d'attraction Chercheurs vers points du maillage
-F = 1000000  # force d'attraction Vérificateur vers Target
+F = 100000000  # force d'attraction Vérificateur vers Target
 
 
 class Environment():
@@ -103,20 +103,23 @@ class Environment():
                             ay += f_ressort_y
 
                         # il faudra implémenter le graphe connexe ici
-                        agentA.dico_cible.update(agentB.dico_cible)
+                        agentA.dico_cible = fusion_dico(
+                            agentA.dico_cible, agentB.dico_cible)
 
-                        for id in agentA.dico_cible:
+                        ''' for id in agentA.dico_cible:
                             try:
                                 if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
                                     dico[id][1] = True
                             except:
-                                pass
+                                pass '''
 
                     if type(agentB) == Target:  # fonctionne, modif champ de vision
-                        if agentB in agentA.neighbours():
+                        if agentB in agentA.neighbours(50):
                             if agentB.id not in agentA.dico_cible:
                                 agentA.dico_cible[agentB.id] = [
-                                    agentB.pos, agentB.state, agentB.id]
+                                    agentB.pos, agentB.checked, agentB.id]
+                                print(agentA.dico_cible)
+                                agentB.targeted = True
                     # print(agentA.dico_cible)
 
                 f_frott_x = f*agentA.speed[0]
@@ -151,36 +154,37 @@ class Environment():
             if type(agentA) == Verificateur:
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur or type(agentB) == Verificateur:
-                        agentA.dico_cible.update(agentB.dico_cible)
-
-                        for id in agentA.dico_cible:
+                        agentA.dico_cible = fusion_dico(
+                            agentA.dico_cible, agentB.dico_cible)
+                        ''' for id in agentA.dico_cible:
                             try:
                                 if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
                                     dico[id][1] = True
 
                                 # print(agentA.dico_cible)
                             except:
-                                continue
+                                continue '''
                         """except:
                             pass"""
 
                 if agentA.target == None:
                     liste_cibles_libres = []
-                    agent_choisi = None
+                    #agent_choisi = None
                     dist_choisi = np.inf
                     id_choisi = None
+                    pos_choisi = 0
                     for id in agentA.dico_cible:
                         if not agentA.dico_cible[id][1]:
                             liste_cibles_libres.append(agentA.dico_cible[id])
 
                     for e in liste_cibles_libres:
-                        print(e)
-                        if e[1] < dist_choisi:
-                            agent_choisi = e[0]
-                            dist_choisi = e[1]
+                        dist = distance_pos(e[0], agentA.pos)
+                        if dist < dist_choisi:
+                            pos_choisi = e[0]
                             id_choisi = e[2]
-
-                    agentA.target = [agent_choisi, id_choisi]
+                    if len(liste_cibles_libres) != 0:
+                        agentA.target = [pos_choisi, id_choisi]
+                    # agentA.dico_cible[agentA.target[1]]=False
                     # except : pass
 
                 dx = agentA.pos[0]-self.barycentre()[0]
@@ -206,7 +210,7 @@ class Environment():
                             vect_AB(agentA, agentB)[1]
 
                 if agentA.target != None:
-                    print(agentA.target)
+                    # print(agentA.target)
 
                     agentTarget = None
                     for agentB in self.Agent_list:

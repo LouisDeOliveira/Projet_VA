@@ -62,14 +62,15 @@ class Verificateur():
         self.dico_cible = {}  # {id:{pos, state, id}}
         self.time = 0
 
-    def check_target():
-        checked = False
-        while self.time != 0 and self.env.time-self.time <= 5:
-            checked = True
-        if checked:
-            self.dico_cible[self.target[1]] = True
+    def check_target(self):
+        if self.env.time-self.time >= 2 and self.target != None:
+            print("checked")
+            self.dico_cible[self.target[1]][1] = True
+            for agent in self.env.Agent_list:
+                if agent.id == self.target[1]:
+                    agent.checked = True
             self.target = None
-            checked = False
+            self.time = 0
 
     def move(self):
         try:

@@ -46,10 +46,12 @@ while Running:
             Running = False
 
     env.update()
-    env.show_circles()
+    # env.show_circles()
     for agent in env.Agent_list:
         if type(agent) == Chercheur:
             agent.check_mesh()
+        if type(agent) == Verificateur:
+            agent.check_target()
         agent.display()
 
     env.draw_graph()

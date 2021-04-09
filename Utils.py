@@ -56,3 +56,20 @@ def vect_norme_carre(vect):
 
 def normalize_vector(vect):
     return vect/np.sqrt(vect_norme_carre(vect))
+
+
+def fusion_dico(dic1, dic2):
+    dic = dic1
+    for id in dic2.keys():
+        if id in dic1.keys():
+            if dic1[id][1] == False:
+                dic[id] = dic2[id]
+        else:
+            dic[id] = dic2[id]
+    return dic
+
+
+def distance_pos(a, b):
+    dx = a[0]-b[0]
+    dy = a[1]-b[1]
+    return math.sqrt((dx)**2+(dy)**2)

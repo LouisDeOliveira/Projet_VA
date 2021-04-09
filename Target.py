@@ -40,5 +40,7 @@ class Target():
     def display(self):
         x, y = self.pos
         pygame.draw.circle(self.env.screen, red, (x, y), 8, 5)
+        if self.targeted:
+            pygame.draw.circle(self.env.screen, blue, (x, y), 8, 5)
         if self.checked:
             pygame.draw.circle(self.env.screen, green, (x, y), 8, 5)
