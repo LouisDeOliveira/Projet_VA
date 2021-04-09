@@ -117,7 +117,10 @@ class Environment():
                             if agentB.id not in agentA.dico_cible:
                                 agentA.dico_cible[agentB.id] = [
                                     agentB.pos, agentB.state, agentB.id]
-                    # print(agentA.dico_cible)
+                    # print(agentA.dico_cible)7
+
+                    agentA.battery = agentA.batterie()
+                    print(agentA.battery)
 
                 f_frott_x = f*agentA.speed[0]
                 f_frott_y = f*agentA.speed[1]
@@ -179,7 +182,7 @@ class Environment():
                             liste_cibles_libres.append(agentA.dico_cible[id])
 
                     for e in liste_cibles_libres:
-                        print(e)
+                        #print(e)
                         if e[1] < dist_choisi:
                             agent_choisi = e[0]
                             dist_choisi = e[1]

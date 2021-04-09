@@ -21,6 +21,8 @@ purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
 res = 150
 k = 50000
+tick_freq = 100
+dt = 1/tick_freq
 
 
 class Verificateur():
@@ -49,7 +51,7 @@ class Verificateur():
         self.l0 = 200
         self.maxspeed = maxspeed
         self.state = 'normal'
-        self.battery = None
+        self.battery = 10000        #10 kWh énergie initiale
         self.dir = direction
         self.size = size
         self.target = None  #[coordonnées de destination, id du Target associé]
@@ -112,4 +114,9 @@ class Verificateur():
         """ liste des agents (Chercheur ou Target) à distance <= r du Chercheur """
 
         return [self.env.Agent_list[i] for i in range(len(self.env.Agent_list)) if distance(self, self.env.Agent_list[i]) < r and self.env.Agent_list[i] != self]
-        
+    
+    def batterie(self):
+        puissance_max = 1100        #Watt
+        puissance_scan = 150        #Watt
+
+        return self.battery - puissance_max*dt*self.speed/maxspeed - puissance_scan
