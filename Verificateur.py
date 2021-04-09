@@ -119,4 +119,4 @@ class Verificateur():
         puissance_max = 1100        #Watt
         puissance_scan = 150        #Watt
 
-        return self.battery - puissance_max*dt*self.speed/maxspeed - puissance_scan
+        return self.battery - puissance_max*dt*abs(self.speed)/maxspeed - puissance_scan

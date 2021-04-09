@@ -214,7 +214,7 @@ class Environment():
                             vect_AB(agentA, agentB)[1]
 
                 if agentA.target != None:
-                    print(agentA.target)
+                    #print(agentA.target)
 
                     agentTarget = None
                     for agentB in self.Agent_list:

@@ -59,6 +59,7 @@ class Chercheur():
         self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
                                                                                                       'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
         self.dico_cible = {}        #{id:{pos, state, id}}
+        self.cdv = 50
 
     def make_message(self, recipient):
         self.message['sender_id'] = self.id
@@ -118,7 +119,7 @@ class Chercheur():
     def batterie(self):
         puissance_max = 1100        #Watt
         
-        return self.battery - puissance_max*dt*self.speed/maxspeed
+        return self.battery - puissance_max*dt*abs(self.speed)/maxspeed
 
     def check_mesh(self):
         try:
