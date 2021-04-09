@@ -36,7 +36,7 @@ class Environment():
         self.width = width
         self.height = height
         self.Agent_list = []
-        self.res = 25
+        self.res = 20
         self.screen = screen
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(
@@ -137,7 +137,7 @@ class Environment():
                 agent.speed[1] = 0
 
     def draw_graph(self):
-        """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins (fonction neighbours par défaut))"""
+        """ Dessine le graphe reliant les Drones à portée de communication(càd qui sont voisins(fonction neighbours par défaut))"""
         edge_list_c = []
         edge_list_v = []
         for agent in self.Agent_list:
