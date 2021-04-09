@@ -164,12 +164,7 @@ class Environment():
                         """except:
                             pass"""
 
-                if type(agentA.target) == 'NoneType':
-                    # routine = si on est au niveau de la cible, attendre 5 secondes (par exemple)
-                    # print('oyea')
-                    pass
-
-                else:
+                if agentA.target == None:
                     liste_cibles_libres = []
                     agent_choisi = None
                     dist_choisi = np.inf
@@ -223,6 +218,9 @@ class Environment():
                     f_target_y = F*vect_AB(agentA, agentTarget)[1]
                     """except : 
                         print("oups, problème d'id!")"""
+
+                    if distance(agentA, agentTarget) < 10 and agentA.time == 0:
+                        agentA.time = self.time
 
                 else:
                     f_target_x = 0
