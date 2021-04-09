@@ -36,22 +36,23 @@ class Environment():
         self.height = height
         
         self.Agent_list = []
-        self.res = 20
+        self.res = 50
         self.screen = screen
         
         self.time = 0
         self.tick_freq = 100
         self.dt = 1/tick_freq
 
-        self.k_ressort = 6
+        self.k_ressort = 5
         self.l0_ressort = 200
-        self.maxacc = 900.0
-        self.maxspeed = 100.0
+
+        self.maxacc = 0.5*10      #Trouvé sur un sujet CCS
+        self.maxspeed = 3.1*10     #6 noeuds
 
         self.q = 50000
         self.F = 1000000
         self.f = 2
-        self.k = 50000
+        self.k = 5000
 
         for _ in range(n_chercheurs):
             self.Agent_list.append(Chercheur(random.random(

@@ -24,7 +24,7 @@ lightpurple = (153, 0, 153)
 pygame.init()
 width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
-env = Environment(5, 2, 10, width, height, screen)
+env = Environment(5, 0, 0, width, height, screen)
 Running = True
 tick_freq = env.tick_freq
 dt = env.dt
@@ -39,7 +39,7 @@ while Running:
             Running = False
 
     env.update()
-    env.show_circles()
+    #env.show_circles()
     for agent in env.Agent_list:
         if type(agent) == Chercheur:
             agent.check_mesh()
