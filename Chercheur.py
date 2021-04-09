@@ -145,14 +145,6 @@ class Chercheur():
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne-1), self.env.res*(ligne+1)) < self.env.res:
                 self.env.mesh[ligne][colonne] = 0
             if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+1), self.env.res*(ligne-1)) < self.env.res:
-<<<<<<< HEAD
-                self.env.mesh[ligne][colonne] = 0
-<<<<<<< HEAD
-=======
-            print("ok")
-=======
                 self.env.mesh[ligne][colonne] = 0"""
->>>>>>> 7eb77ce55cd1d801d66f237a56d0c7156f58b72b
->>>>>>> master
         except:
             pass
