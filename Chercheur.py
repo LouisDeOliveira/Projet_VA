@@ -57,6 +57,7 @@ class Chercheur():
         self.inbox = []
         self.message = {'sender_id': None, 'recipient_id': None, 'time': None, 'message': {'status': {'x': None, 'y': None, 'z': None, 'dir': None,
                                                                                                       'speed': None, 'state': None, 'battery': None}, 'alert': {'verif': None, 'help': None, 't_x': None, 't_y': None, 't_z': None}}}
+        self.dico_cible = {}  # {id:{pos, state}}
 
     def make_message(self, recipient):
         self.message['sender_id'] = self.id

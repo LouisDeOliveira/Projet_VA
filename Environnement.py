@@ -21,11 +21,16 @@ lightblue = (0, 0, 255)
 lightred = (255, 100, 100)
 purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
+<<<<<<< HEAD
 k = 50000
+=======
+res = 150
+k = 50000       #constante du ressort entre les Chercheurs
+>>>>>>> origin/TargetVerif
 tick_freq = 100
 dt = 1/tick_freq
-q = 100000
-
+q = 100000      #force d'attraction Chercheurs vers points du maillage
+F = 1000000      #force d'attraction Vérificateur vers Target
 
 class Environment():
     """
@@ -45,7 +50,7 @@ class Environment():
 
         for _ in range(n_targets):
             self.Agent_list.append(Target(random.random(
-            )*self.width, random.random()*self.height, 5, -90, 5, int(uuid.uuid1()), self))
+            )*self.width, random.random()*self.height, int(uuid.uuid1()), self))
 
         for _ in range(n_verificateurs):
             self.Agent_list.append(Verificateur(random.random(
@@ -97,6 +102,23 @@ class Environment():
                             ax += f_ressort_x
                             ay += f_ressort_y
 
+                        #il faudra implémenter le graphe connexe ici
+                        agentA.dico_cible.update(agentB.dico_cible)  
+                        
+                        for id in agentA.dico_cible:
+                            try :
+                                if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
+                                    dico[id][1] = True
+                            except :
+                                pass
+                        
+
+                    if type(agentB) == Target:              #fonctionne, modif champ de vision
+                        if agentB in agentA.neighbours():
+                            if agentB.id not in agentA.dico_cible:
+                                agentA.dico_cible[agentB.id] = [agentB.pos,agentB.state,agentB.id]
+                    #print(agentA.dico_cible)
+
                 f_frott_x = f*agentA.speed[0]
                 f_frott_y = f*agentA.speed[1]
                 f_charge_x = 0
@@ -125,9 +147,52 @@ class Environment():
                 else:
                     agentA.acc = vect_acc
 
-            if type(agentA) == Verificateur:
+
+            if type(agentA) == Verificateur :           #Fonctionne mal : les deux vérif vont voir la même Target, qui n'est pas la plus proche
+                for agentB in self.Agent_list:
+                    if type(agentB) == Chercheur or type(agentB) == Verificateur:
+                        agentA.dico_cible.update(agentB.dico_cible)  
+                        
+                        for id in agentA.dico_cible:
+                            try:
+                                if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
+                                    dico[id][1] = True
+                                
+                                #print(agentA.dico_cible)
+                            except :
+                                continue
+                        """except:
+                            pass"""
+                
+                if type(agentA.target) == 'NoneType':
+                    #routine = si on est au niveau de la cible, attendre 5 secondes (par exemple)
+                    #print('oyea')
+                    pass
+
+                else:
+                    liste_cibles_libres = []
+                    agent_choisi = None
+                    dist_choisi = np.inf
+                    id_choisi = None
+                    for id in agentA.dico_cible:
+                        if not agentA.dico_cible[id][1]:
+                            liste_cibles_libres.append(agentA.dico_cible[id])
+                    
+                    
+                    for e in liste_cibles_libres:
+                        print(e)
+                        if e[1] < dist_choisi:
+                            agent_choisi = e[0]
+                            dist_choisi = e[1]
+                            id_choisi = e[2]
+
+                
+                    agentA.target = [agent_choisi, id_choisi]
+                    #except : pass
+
                 dx = agentA.pos[0]-self.barycentre()[0]
                 dy = agentA.pos[1]-self.barycentre()[1]
+
                 f_ressort_x = -agentA.k * \
                     (math.sqrt((dx)**2+(dy)**2) - agentA.l0) * \
                     dx/(np.sqrt(dx**2+dy**2))
@@ -137,6 +202,7 @@ class Environment():
 
                 f_frott_x = f*agentA.speed[0]
                 f_frott_y = f*agentA.speed[1]
+
                 for agentB in self.Agent_list:
                     if type(agentB) == Verificateur and agentA.id != agentB.id:
                         f_charge_x += q / \
@@ -145,8 +211,27 @@ class Environment():
                         f_charge_y += q / \
                             distance(agentA, agentB)**2 * \
                             vect_AB(agentA, agentB)[1]
-                ax = f_ressort_x-f_frott_x
-                ay = f_ressort_y-f_frott_y
+
+                if type(agentA.target) != 'NoneType' :
+                    print(agentA.target)
+                    
+                    agentTarget = None
+                    for agentB in self.Agent_list:
+                        if agentB.id == agentA.target[1]:
+                            agentTarget = agentB
+                    
+                    #try :
+                    f_target_x = F*vect_AB(agentA, agentTarget)[0]
+                    f_target_y = F*vect_AB(agentA, agentTarget)[1]
+                    """except : 
+                        print("oups, problème d'id!")"""
+                    
+                else : 
+                    f_target_x = 0
+                    f_target_y = 0
+
+                ax = f_ressort_x - f_frott_x + f_charge_x + f_target_x
+                ay = f_ressort_y - f_frott_y + f_charge_y + f_target_y
 
                 vect_acc = np.array([ax, ay])
                 if vect_norme_carre(vect_acc) > maxacc**2:
@@ -155,15 +240,16 @@ class Environment():
                     agentA.acc = vect_acc
 
         for agent in self.Agent_list:
-            vect_vit = np.array(
-                [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
-            if vect_norme_carre(vect_vit) > maxspeed**2:
-                agentA.speed = maxspeed*normalize_vector(vect_vit)
-            else:
-                agent.speed = vect_vit
+            if type(agent) != Target:
+                vect_vit = np.array(
+                    [agent.speed[0] + dt*agent.acc[0], agent.speed[1] + dt*agent.acc[1]])
+                if vect_norme_carre(vect_vit) > maxspeed**2:
+                    agentA.speed = maxspeed*normalize_vector(vect_vit)
+                else:
+                    agent.speed = vect_vit
 
-            agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
-            agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
+                agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
+                agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
 
             # conditions de bord :  a revoir pour rendre plus réaliste
             if agent.pos[0] < 0:
