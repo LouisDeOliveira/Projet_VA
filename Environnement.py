@@ -51,9 +51,9 @@ class Environment():
             self.Agent_list.append(Verificateur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
 
-    """def step(self): 
+    def step(self): 
         for agent in self.Agent_list:
-            agent.step()"""
+            agent.step()
 
     def update(self):
         self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
@@ -94,11 +94,11 @@ class Environment():
                     ax += f_charge_x*self.N0/self.active_nodes()
                     ay += f_charge_y*self.N0/self.active_nodes()
 
-                ax -= f_frott_x
+                ax -= f_frott_x #ajout de la force de frottement négative à l'accélération 
                 ay -= f_frott_y
 
                 vect_acc = np.array([ax, ay])
-                if vect_norme_carre(vect_acc) > maxacc**2:
+                if vect_norme_carre(vect_acc) > maxacc**2: #limitation sur l'accélération
                     agentA.acc = maxacc*normalize_vector(vect_acc)
                 else:
                     agentA.acc = vect_acc
@@ -130,8 +130,8 @@ class Environment():
 
     def draw_graph(self):
         """ Dessine le graphe reliant les Drones à portée de communication (càd qui sont voisins)"""
-        edge_list_c = []
-        edge_list_v = []
+        edge_list_c = []#chercheurs
+        edge_list_v = []#vérificateurs
         for agent in self.Agent_list:
             if type(agent) == Chercheur:
                 for neighbour in agent.neighbours():

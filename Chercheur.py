@@ -84,7 +84,7 @@ class Chercheur():
     def score(self):
         pass
 
-    def display(self):
+    def display(self): #pour dessiner la petite fleche sur le dronegit c
         """ Dessine le drone sur l'écran """
 
         a = self.dir
