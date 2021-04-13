@@ -63,10 +63,10 @@ class Verificateur():
         self.time = 0
 
     def check_target(self):
-        if self.env.time-self.time >= 0.5 and self.target != None:
-            print("checked")
+        if self.env.time-self.time >= 1 and self.time != 0:
             self.dico_cible[self.target[1]][1] = True
             for agent in self.env.Agent_list:
+
                 if agent.id == self.target[1]:
                     agent.checked = True
             self.target = None
