@@ -1,6 +1,5 @@
 numpy>=1.18.5
 matplotlib>=3.3.3
-scipy>=1.5.4
 Pillow>=7.1.2
 pygame>=2.0.1
 uuid>=1.30
