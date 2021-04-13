@@ -31,15 +31,15 @@ k = 50000
 pygame.init()
 width, height = 750, 750
 screen = pygame.display.set_mode((width, height))
-env = Environment(5, 0, 0, width, height, screen)
+env = Environment(5, 0, 0, width, height, screen) #on précise le nb de drones, ici 5 drones chercheurs, 0 verif, 0 cible
 Running = True
-tick_freq = 100
+tick_freq = 100 #nb de rafraichissement/actualisation par seconde des calculs
 dt = 1/tick_freq
 t = 0
 # Screen Update Speed (FPS)
 clock = pygame.time.Clock()
 env.mesh_matrix()
-while Running:
+while Running: #permet d'arrêter le code lorsqu'on quitte la fenêtre
     t += dt
     for event in pygame.event.get():
         if event.type == pygame.QUIT:

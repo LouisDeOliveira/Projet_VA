@@ -39,7 +39,7 @@ class Environment():
         self.Agent_list = []
         self.res = 50
         self.screen = screen
-        for _ in range(n_chercheurs):
+        for _ in range(n_chercheurs): #initialise aléatoirement les positions de chaque drone
             self.Agent_list.append(Chercheur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
 
@@ -51,9 +51,9 @@ class Environment():
             self.Agent_list.append(Verificateur(random.random(
             )*self.width/2, random.random()*self.height/2, 100, -90, 5, int(uuid.uuid1()), self))
 
-    def step(self):
+    """def step(self): 
         for agent in self.Agent_list:
-            agent.step()
+            agent.step()"""
 
     def update(self):
         self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
