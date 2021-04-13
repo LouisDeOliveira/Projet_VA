@@ -56,3 +56,7 @@ def vect_norme_carre(vect):
 
 def normalize_vector(vect):
     return vect/np.sqrt(vect_norme_carre(vect))
+
+
+def vector_direction(vect):
+    return np.arctan2(-vect[1], vect[0])

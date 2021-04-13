@@ -44,7 +44,7 @@ class Chercheur():
         self.speed = np.array([0., 0.])
         self.acc = np.array([0., 0.])
         self.k = 20
-        self.l0 = 150
+        self.l0 = 120
         self.maxspeed = speed
         self.state = 'normal'
         self.battery = None

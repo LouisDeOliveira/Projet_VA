@@ -10,8 +10,8 @@ from Utils import *
 white = (255, 255, 255)
 red = (255, 0, 0)
 f = 2
-maxacc = 20.0
-maxspeed = 20.0
+maxacc = 900.0
+maxspeed = 75.0
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -247,6 +247,7 @@ class Environment():
 
                 agent.pos[0] = agent.pos[0] + dt*agent.speed[0]
                 agent.pos[1] = agent.pos[1] + dt*agent.speed[1]
+                agent.dir = vector_direction(agent.speed)
 
             # conditions de bord :  a revoir pour rendre plus réaliste
             if agent.pos[0] < 0:

@@ -28,7 +28,7 @@ purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
 res = 150
 k = 50000
-tick_freq = 100
+tick_freq = 30
 dt = 1/tick_freq
 t = 0
 # initialisation des listes
@@ -56,13 +56,13 @@ while Running and t < 100:
     for agent in env.Agent_list:
         if type(agent) == Chercheur:
             agent.check_mesh()
-        # agent.display()
+        agent.display()
     V.append(np.sqrt(vect_norme_carre(env.Agent_list[0].speed)))
 
-    # env.draw_graph()
-    # env.show_mesh()
-    # pygame.display.update()
-    #screen.fill((0, 0, 0))
+    env.draw_graph()
+    env.show_mesh()
+    pygame.display.update()
+    screen.fill((0, 0, 0))
 
     # Setting FPS
     clock.tick(tick_freq)
