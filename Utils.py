@@ -62,8 +62,11 @@ def fusion_dico(dic1, dic2):
     dic = dic1
     for id in dic2.keys():
         if id in dic1.keys():
-            if dic1[id][1] == False:
+            if dic1[id][3] == False:
                 dic[id] = dic2[id]
+            else:
+                if dic1[id][1] == False:
+                    dic[id] = dic2[id]
         else:
             dic[id] = dic2[id]
     return dic

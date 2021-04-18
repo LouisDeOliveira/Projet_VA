@@ -105,6 +105,19 @@ class Environment():
                         agentA.dico_cible = fusion_dico(
                             agentA.dico_cible, agentB.dico_cible)
 
+                    # si les vérificateurs explorent une cible, l'essain de drones chercheurs doit les attendre
+                    if type(agentB) == Verificateur:
+                        if agentB in agentA.neighbours() and agentB.target != None:
+                            f_ressort_x = agentA.k * \
+                                (distance(agentA, agentB) - agentA.l0) * \
+                                vect_AB(agentA, agentB)[0]
+
+                            f_ressort_y = agentA.k * \
+                                (distance(agentA, agentB) - agentA.l0) * \
+                                vect_AB(agentA, agentB)[1]
+                            ax += f_ressort_x
+                            ay += f_ressort_y
+
                         ''' for id in agentA.dico_cible:
                             try:
                                 if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
@@ -155,6 +168,7 @@ class Environment():
                     if type(agentB) == Chercheur or type(agentB) == Verificateur:
                         agentA.dico_cible = fusion_dico(
                             agentA.dico_cible, agentB.dico_cible)
+                        print(len(agentA.dico_cible))
                 ''' for id in agentA.dico_cible:
                         try:
                             if agentA.dico_cible[id][1] or agentB.dico_cible[id][1]:
@@ -170,24 +184,21 @@ class Environment():
                     liste_cibles_libres = []
                     # agent_choisi = None
                     dist_choisi = np.inf
-                    id_choisi = None
                     target = None
                     for id in agentA.dico_cible:
                         if not agentA.dico_cible[id][1] and not agentA.dico_cible[id][3]:
                             liste_cibles_libres.append(agentA.dico_cible[id])
-
-                    if len(liste_cibles_libres) != 0:
-                        for e in liste_cibles_libres:
-                            id_choisi = e[2]
-                            for agentB in self.Agent_list:
-                                if agentB.id == id_choisi:
-                                    target = agentB
-                            dist = distance(target, agentA)
-                            if dist < dist_choisi:
-                                agentA.target = target
-                                dist_choisi = dist
-                                agentA.dico_cible[agentA.target.id][3] = True
-                                target.checking = True
+                    for e in liste_cibles_libres:
+                        id_choisi = e[2]
+                        for agentB in self.Agent_list:
+                            if agentB.id == id_choisi:
+                                target = agentB
+                        dist = distance(target, agentA)
+                        if dist < dist_choisi:
+                            agentA.target = target
+                            dist_choisi = dist
+                            agentA.dico_cible[agentA.target.id][3] = True
+                            target.checking = True
 
                     # agentA.dico_cible[agentA.target[1]]=False
                     # except : pass
