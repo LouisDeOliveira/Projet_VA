@@ -116,7 +116,7 @@ class Environment():
                         if agentB in agentA.neighbours(50) and not agentB.checked:
                             if agentB.id not in agentA.dico_cible:
                                 agentA.dico_cible[agentB.id] = [
-                                    agentB.pos, agentB.checked, agentB.id]
+                                    agentB.pos, agentB.checked, agentB.id, agentB.checking]
 
                                 agentB.targeted = True
                     # print(agentA.dico_cible)
@@ -149,7 +149,7 @@ class Environment():
                 else:
                     agentA.acc = vect_acc
 
-            # Fonctionne mal : les deux vérif vont voir la même Target, qui n'est pas la plus proche
+            # Fonctionne mal : les deux vérif vont voir la même Target
             if type(agentA) == Verificateur:
                 for agentB in self.Agent_list:
                     if type(agentB) == Chercheur or type(agentB) == Verificateur:
@@ -171,18 +171,24 @@ class Environment():
                     # agent_choisi = None
                     dist_choisi = np.inf
                     id_choisi = None
-                    pos_choisi = 0
+                    target = None
                     for id in agentA.dico_cible:
-                        if not agentA.dico_cible[id][1]:
+                        if not agentA.dico_cible[id][1] and not agentA.dico_cible[id][3]:
                             liste_cibles_libres.append(agentA.dico_cible[id])
 
-                    for e in liste_cibles_libres:
-                        dist = distance_pos(e[0], agentA.pos)
-                        if dist < dist_choisi:
-                            pos_choisi = e[0]
-                            id_choisi = e[2]
                     if len(liste_cibles_libres) != 0:
-                        agentA.target = [pos_choisi, id_choisi]
+                        for e in liste_cibles_libres:
+                            id_choisi = e[2]
+                            for agentB in self.Agent_list:
+                                if agentB.id == id_choisi:
+                                    target = agentB
+                            dist = distance(target, agentA)
+                            if dist < dist_choisi:
+                                agentA.target = target
+                                dist_choisi = dist
+                                agentA.dico_cible[agentA.target.id][3] = True
+                                target.checking = True
+
                     # agentA.dico_cible[agentA.target[1]]=False
                     # except : pass
 
@@ -211,11 +217,6 @@ class Environment():
                 if agentA.target != None:
                     # print(agentA.target)
 
-                    agentTarget = None
-                    for agentB in self.Agent_list:
-                        if agentB.id == agentA.target[1]:
-                            agentTarget = agentB
-
                     # try :
                     # F*vect_AB(agentA, agentTarget)[0]
                     ''' if distance(agentA, agentTarget) > 100:
@@ -224,8 +225,8 @@ class Environment():
                         f_target_y = 5*distance(agentA, agentTarget)/100*(distance(agentA, agentTarget)-50) * \
                             vect_AB(agentA, agentTarget)[1]
                     else: '''
-                    f_target_x = F*vect_AB(agentA, agentTarget)[0]
-                    f_target_y = F*vect_AB(agentA, agentTarget)[1]
+                    f_target_x = F*vect_AB(agentA, agentA.target)[0]
+                    f_target_y = F*vect_AB(agentA, agentA.target)[1]
 
                     ''' f_frott_x = 100*agentA.speed[0] * \
                         np.sqrt(vect_norme_carre(agentA.speed))
@@ -242,9 +243,8 @@ class Environment():
                     """except :
                         print("oups, problème d'id!")"""
 
-                    if distance(agentA, agentTarget) < 50 and agentA.time == 0:
+                    if distance(agentA, agentA.target) < 50 and agentA.time == 0:
                         agentA.time = self.time
-                        print("on it")
 
                 else:
                     f_target_x = 0
@@ -254,7 +254,6 @@ class Environment():
                 ay = f_ressort_y - f_frott_y + f_charge_y + f_target_y
 
                 vect_acc = np.array([ax, ay])
-                print(vect_acc)
                 if vect_norme_carre(vect_acc) > maxacc**2:
                     agentA.acc = maxacc*normalize_vector(vect_acc)
                 else:

@@ -53,7 +53,7 @@ class Verificateur():
         self.dir = direction
         self.size = size
         # [coordonnées de destination, id du Target associé]
-        self.target = None
+        self.target = None  # objet de la classe target
         self.id = id
         self.destination = None
         self.inbox = []
@@ -64,11 +64,8 @@ class Verificateur():
 
     def check_target(self):
         if self.env.time-self.time >= 1 and self.time != 0:
-            self.dico_cible[self.target[1]][1] = True
-            for agent in self.env.Agent_list:
-
-                if agent.id == self.target[1]:
-                    agent.checked = True
+            self.dico_cible[self.target.id][1] = True
+            self.target.checked = True
             self.target = None
             self.time = 0
 
