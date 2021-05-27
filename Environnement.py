@@ -9,9 +9,9 @@ from Chercheur import Chercheur
 from Utils import *
 white = (255, 255, 255)
 red = (255, 0, 0)
-f = 2
-maxacc = 900.0
-maxspeed = 75.0
+f = 0.1
+maxacc = 2000
+maxspeed = 200
 circle_list = []
 shadow = (80, 80, 80)
 lightgreen = (0, 255, 0)
@@ -81,7 +81,7 @@ class Environment():
 
         """
         self.time += dt
-        print(self.time)
+        # print(self.time)
         self.N0 = np.shape(self.mesh)[0]*np.shape(self.mesh)[1]
         for agentA in self.Agent_list:
             if type(agentA) == Chercheur:
@@ -118,8 +118,12 @@ class Environment():
                                     agentB.pos, agentB.state, agentB.id]
                     # print(agentA.dico_cible)
 
-                f_frott_x = f*agentA.speed[0]
-                f_frott_y = f*agentA.speed[1]
+                f_frott_x = f * \
+                    np.sqrt(agentA.speed[0]**2 +
+                            agentA.speed[1]**2)*agentA.speed[0]
+                f_frott_y = f * \
+                    np.sqrt(agentA.speed[0]**2 +
+                            agentA.speed[1]**2)*agentA.speed[1]
                 f_charge_x = 0
                 f_charge_y = 0
                 size = np.shape(self.mesh)
@@ -220,7 +224,7 @@ class Environment():
                     # try :
                     f_target_x = F*vect_AB(agentA, agentTarget)[0]
                     f_target_y = F*vect_AB(agentA, agentTarget)[1]
-                    """except : 
+                    """except :
                         print("oups, problème d'id!")"""
 
                 else:
@@ -325,6 +329,22 @@ class Environment():
                 if self.mesh[i][j] == 1:
                     N += 1
         return N
+
+    def update_mesh(self):
+        size = np.shape(self.mesh)
+        for i in range(size[0]):
+            for j in range(size[1]):
+                N = 0
+                for k in range(-1, 2, 2):
+                    for l in range(-1, 2, 2):
+                        try:
+                            if self.mesh[i][j] != 0 and self.mesh[i+k][j+l] == 0 and i+k >= 0 and j+l >= 0:
+                                N += 1
+                        except:
+                            continue
+                if self.mesh[i][j] != 0:
+                    self.mesh[i][j] = 10*N + 1
+        # print(self.mesh)
 
     def score(self):
         score_couverture = 0

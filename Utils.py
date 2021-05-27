@@ -3,7 +3,7 @@ import math
 import uuid
 import random
 import numpy as np
-np.seterr(divide='ignore', invalid='ignore')
+#np.seterr(divide='ignore', invalid='ignore')
 
 
 white = (255, 255, 255)
@@ -43,11 +43,12 @@ def vect_AB(agentA, agentB):
     v_x = agentB.pos[0]-agentA.pos[0]
     v_y = agentB.pos[1]-agentA.pos[1]
 
-    """if (v_x**2+v_x**2) == 0:
-        return np.array([0, 0])
+    if np.sqrt(v_x**2+v_x**2) > 0:
+        vect = np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
+        return vect
+
     else:
-        return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)"""
-    return np.array([v_x, v_y])/np.sqrt(v_x**2+v_x**2)
+        return np.array([0, 0])
 
 
 def vect_norme_carre(vect):

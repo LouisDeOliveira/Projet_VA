@@ -15,7 +15,7 @@ from Benchmark import *
 white = (255, 255, 255)
 red = (255, 0, 0)
 f = 2
-maxacc = 2.0
+maxacc = 900
 maxspeed = 20.0
 circle_list = []
 shadow = (80, 80, 80)
@@ -28,7 +28,7 @@ purple = (102, 0, 102)
 lightpurple = (153, 0, 153)
 res = 150
 k = 50000
-tick_freq = 30
+tick_freq = 100
 dt = 1/tick_freq
 t = 0
 # initialisation des listes
@@ -39,7 +39,7 @@ V = []
 pygame.init()
 width, height = 800, 800
 screen = pygame.display.set_mode((width, height))
-env = Environment(5, 0, 0, width, height, screen)
+env = Environment(5, 2, 5, width, height, screen)
 Running = True
 
 # Screen Update Speed (FPS)
@@ -52,6 +52,7 @@ while Running and t < 100:
             Running = False
 
     env.update()
+    env.update_mesh()
     # env.show_circles()
     for agent in env.Agent_list:
         if type(agent) == Chercheur:

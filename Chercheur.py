@@ -125,7 +125,7 @@ class Chercheur():
             for i in range(-2, 3):
                 for j in range(-2, 3):
                     try:
-                        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+i), self.env.res*(ligne+j)) < self.cdv:
+                        if point_distance(self.pos[0], self.pos[1], self.env.res*(colonne+i), self.env.res*(ligne+j)) < self.cdv and ligne+j >= 0 and colonne+i >= 0:
                             self.env.mesh[ligne+j][colonne+i] = 0
                     except:
                         pass
